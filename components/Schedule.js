@@ -5,9 +5,10 @@ import {
   getFirestore,
   collection,
   getDocs,
-  addDoc,
-  updateDoc,
+  setDoc,
   doc,
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -30,143 +31,245 @@ export default function Schedule() {
   const [newClass, setNewClass] = useState({
     day: "",
     name: "",
-    time: "",
+    startTime: "",
+    endTime: "",
     weeks: "",
   });
+  const [editingClass, setEditingClass] = useState(null);
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   useEffect(() => {
-    fetchSchedule();
+    fetchScheduleData();
   }, []);
 
-  const fetchSchedule = async () => {
+  const fetchScheduleData = async () => {
     try {
       const scheduleCollection = collection(db, "schedule");
       const scheduleSnapshot = await getDocs(scheduleCollection);
-      const scheduleData = {};
+      const fetchedData = {};
       scheduleSnapshot.forEach((doc) => {
-        const day = doc.id;
-        const classes = doc.data().classes;
-        scheduleData[day] = classes;
+        fetchedData[doc.id] = doc.data();
       });
-      setScheduleData(scheduleData);
+      setScheduleData(fetchedData);
       setLoading(false);
     } catch (err) {
-      console.error("Error fetching schedule: ", err);
-      setError("Failed to load schedule. Please try again later.");
+      setError("Error fetching schedule data");
       setLoading(false);
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewClass({ ...newClass, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
+  const addClass = async (e) => {
     e.preventDefault();
     try {
-      const dayRef = doc(db, "schedule", newClass.day);
-      const dayDoc = await getDocs(dayRef);
-
-      if (dayDoc.exists()) {
-        // If the day document exists, update it
-        await updateDoc(dayRef, {
-          classes: [...scheduleData[newClass.day], newClass],
-        });
-      } else {
-        // If the day document doesn't exist, create it
-        await addDoc(collection(db, "schedule"), {
-          [newClass.day]: [newClass],
-        });
-      }
-
-      // Refresh the schedule data
-      fetchSchedule();
-      // Clear the form
-      setNewClass({ day: "", name: "", time: "", weeks: "" });
+      const newClassRef = doc(collection(db, "schedule"));
+      await setDoc(newClassRef, newClass);
+      setNewClass({ day: "", name: "", startTime: "", endTime: "", weeks: "" });
+      fetchScheduleData();
     } catch (err) {
-      console.error("Error adding new class: ", err);
-      setError("Failed to add new class. Please try again.");
+      setError("Error adding new class");
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  const updateClass = async (id, updatedData) => {
+    try {
+      const classRef = doc(db, "schedule", id);
+      await updateDoc(classRef, updatedData);
+      setEditingClass(null);
+      fetchScheduleData();
+    } catch (err) {
+      setError("Error updating class");
+    }
+  };
+
+  const deleteClass = async (id) => {
+    try {
+      await deleteDoc(doc(db, "schedule", id));
+      fetchScheduleData();
+    } catch (err) {
+      setError("Error deleting class");
+    }
+  };
+
+  const startEditing = (id, classData) => {
+    setEditingClass({ id, ...classData });
+  };
+
+  const handleEditChange = (field, value) => {
+    setEditingClass({ ...editingClass, [field]: value });
+  };
+
+  const cancelEditing = () => {
+    setEditingClass(null);
+  };
+
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="alert alert-error shadow-lg">
+        <div>
+          <span>{error}</span>
+        </div>
+      </div>
+    );
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">Schedule</h1>
-
-      {/* Add new class form */}
-      <form onSubmit={handleSubmit} className="mb-8 p-4 bg-base-200 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Add New Class</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <select
-            name="day"
-            value={newClass.day}
-            onChange={handleInputChange}
-            className="select select-bordered w-full"
-            required
-          >
-            <option value="">Select Day</option>
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
-              (day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ),
-            )}
-          </select>
-          <input
-            type="text"
-            name="name"
-            value={newClass.name}
-            onChange={handleInputChange}
-            placeholder="Class Name"
-            className="input input-bordered w-full"
-            required
-          />
-          <input
-            type="time"
-            name="time"
-            value={newClass.time}
-            onChange={handleInputChange}
-            className="input input-bordered w-full"
-            required
-          />
-          <input
-            type="text"
-            name="weeks"
-            value={newClass.weeks}
-            onChange={handleInputChange}
-            placeholder="Number of Weeks"
-            className="input input-bordered w-full"
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary mt-4">
-          Add Class
-        </button>
-      </form>
-
-      {/* Existing schedule display */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {Object.entries(scheduleData).map(([day, classes]) => (
+      <h1 className="text-3xl font-bold text-center mb-8">Class Schedule</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+        {days.map((day) => (
           <div key={day} className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title text-lg font-semibold mb-4">{day}</h2>
-              <ul className="space-y-2">
-                {classes.map((cls, index) => (
-                  <li key={index} className="bg-base-200 p-2 rounded">
-                    <p className="font-medium">{cls.name}</p>
-                    <p className="text-sm">{cls.time}</p>
-                    <p className="text-xs text-gray-500">{cls.weeks}</p>
-                  </li>
+              <h2 className="card-title text-2xl mb-4">{day}</h2>
+              {Object.entries(scheduleData)
+                .filter(([_, classData]) => classData.day === day)
+                .map(([id, classData]) => (
+                  <div key={id} className="mb-1 p-4 bg-base-200 rounded-lg">
+                    {editingClass && editingClass.id === id ? (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={editingClass.name}
+                          onChange={(e) =>
+                            handleEditChange("name", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <input
+                          type="time"
+                          value={editingClass.startTime}
+                          onChange={(e) =>
+                            handleEditChange("startTime", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <input
+                          type="time"
+                          value={editingClass.endTime}
+                          onChange={(e) =>
+                            handleEditChange("endTime", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <input
+                          type="text"
+                          value={editingClass.weeks}
+                          onChange={(e) =>
+                            handleEditChange("weeks", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <div className="flex justify-end space-x-2 mt-2">
+                          <button
+                            onClick={() => updateClass(id, editingClass)}
+                            className="btn btn-primary btn-sm"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={cancelEditing}
+                            className="btn btn-ghost btn-sm"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-semibold">{classData.name}</p>
+                        <p className="text-sm">
+                          {classData.startTime} to {classData.endTime}
+                        </p>
+                        <p className="text-sm">Weeks: {classData.weeks}</p>
+                        <div className="flex justify-end space-x-2 mt-2">
+                          <button
+                            onClick={() => startEditing(id, classData)}
+                            className="btn btn-outline btn-xs"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteClass(id)}
+                            className="btn btn-error btn-xs"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </ul>
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
+        <form onSubmit={addClass} className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <select
+                value={newClass.day}
+                onChange={(e) =>
+                  setNewClass({ ...newClass, day: e.target.value })
+                }
+                className="select select-bordered w-full"
+              >
+                <option value="">Select Day</option>
+                {days.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Class Name"
+                value={newClass.name}
+                onChange={(e) =>
+                  setNewClass({ ...newClass, name: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="time"
+                placeholder="Start Time"
+                value={newClass.startTime}
+                onChange={(e) =>
+                  setNewClass({ ...newClass, startTime: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="time"
+                placeholder="End Time"
+                value={newClass.endTime}
+                onChange={(e) =>
+                  setNewClass({ ...newClass, endTime: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Weeks"
+                value={newClass.weeks}
+                onChange={(e) =>
+                  setNewClass({ ...newClass, weeks: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="card-actions justify-end mt-4">
+              <button type="submit" className="btn btn-primary">
+                Add Class
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );
