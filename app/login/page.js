@@ -1,37 +1,113 @@
+"use client";
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
+  authDomain: "mmc-data-93bf3.firebaseapp.com",
+  projectId: "mmc-data-93bf3",
+  storageBucket: "mmc-data-93bf3.appspot.com",
+  messagingSenderId: "435887892180",
+  appId: "1:435887892180:web:d060cc06f60d08bedd7d41",
+  measurementId: "G-Q3VDQJNV3W",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userDoc = await getDoc(doc(db, "admins", user.uid));
+      if (userDoc.exists()) {
+        router.push('/admin');
+      } else {
+        setError("You don't have admin privileges.");
+        await auth.signOut();
+      }
+    } catch (error) {
+      setError("Invalid email or password.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');  // Redirect to home page after logout
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
   return (
-<div className="hero bg-base-200 min-h-screen">
-  <div className="hero-content flex-col lg:flex-row-reverse">
-    <div className="text-center lg:text-left">
-      <h1 className="text-5xl font-bold">Login now!</h1>
-      <p className="py-6">
-        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
-        quasi. In deleniti eaque aut repudiandae et a id nisi.
-      </p>
-    </div>
-    <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-      <form className="card-body">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Email</span>
-          </label>
-          <input type="email" placeholder="email" className="input input-bordered" required />
-        </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Password</span>
-          </label>
-          <input type="password" placeholder="password" className="input input-bordered" required />
-          <label className="label">
-            <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-          </label>
-        </div>
-        <div className="form-control mt-6">
-          <button className="btn btn-primary">Login</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+    <main className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex-grow flex items-center justify-center bg-base-200 p-4">
+        {user ? (
+          <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4">Welcome, {user.email}</h1>
+            <button onClick={handleLogout} className="btn btn-primary">Logout</button>
+          </div>
+        ) : (
+          <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+            <form className="card-body" onSubmit={handleLogin}>
+              <h1 className="text-3xl font-bold text-center mb-4">Admin Login</h1>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <input 
+                  type="email" 
+                  placeholder="admin@example.com" 
+                  className="input input-bordered" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Password</span>
+                </label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="input input-bordered" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              {error && <div className="text-error text-sm mt-2">{error}</div>}
+              <div className="form-control mt-6">
+                <button className="btn btn-primary" type="submit">Login</button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
