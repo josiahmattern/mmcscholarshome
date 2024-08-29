@@ -7,7 +7,7 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
-      <Schedule />
+      <Schedule isAdmin={false} />
     </main>
   );
 }

@@ -12,6 +12,9 @@ export default function Navbar() {
         <Link className="mr-6 font-bold text-red-600" href="/admin">
           Admin
         </Link>
+        <Link className="mr-6 font-bold" href="/leaderboard">
+         Leaderboard 
+        </Link>
         <Link className="btn mr-1" href="/login">
           Login
         </Link>

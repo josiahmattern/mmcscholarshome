@@ -24,7 +24,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export default function Schedule() {
+export default function Schedule({ isAdmin = false }) {
   const [scheduleData, setScheduleData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -102,6 +102,14 @@ export default function Schedule() {
     setEditingClass(null);
   };
 
+  const formatTime = (time) => {
+    const [hours, minutes] = time.split(":");
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -118,8 +126,10 @@ export default function Schedule() {
     );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-8">Class Schedule</h1>
+    <div className="container mx-auto p-4 mb-8">
+      <h1 className="text-3xl font-bold text-center mt-4 mb-8">
+        Schedule
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {days.map((day) => (
           <div key={day} className="card bg-base-100 shadow-xl">
@@ -129,7 +139,7 @@ export default function Schedule() {
                 .filter(([_, classData]) => classData.day === day)
                 .map(([id, classData]) => (
                   <div key={id} className="mb-1 p-4 bg-base-200 rounded-lg">
-                    {editingClass && editingClass.id === id ? (
+                    {isAdmin && editingClass && editingClass.id === id ? (
                       <div className="space-y-2">
                         <input
                           type="text"
@@ -182,23 +192,26 @@ export default function Schedule() {
                       <div>
                         <p className="font-semibold">{classData.name}</p>
                         <p className="text-sm">
-                          {classData.startTime} to {classData.endTime}
+                          {formatTime(classData.startTime)} to{" "}
+                          {formatTime(classData.endTime)}
                         </p>
                         <p className="text-sm">Weeks: {classData.weeks}</p>
-                        <div className="flex justify-end space-x-2 mt-2">
-                          <button
-                            onClick={() => startEditing(id, classData)}
-                            className="btn btn-outline btn-xs"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => deleteClass(id)}
-                            className="btn btn-error btn-xs"
-                          >
-                            Delete
-                          </button>
-                        </div>
+                        {isAdmin && (
+                          <div className="flex justify-end space-x-2 mt-2">
+                            <button
+                              onClick={() => startEditing(id, classData)}
+                              className="btn btn-outline btn-xs"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteClass(id)}
+                              className="btn btn-error btn-xs"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -207,70 +220,72 @@ export default function Schedule() {
           </div>
         ))}
       </div>
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
-        <form onSubmit={addClass} className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <select
-                value={newClass.day}
-                onChange={(e) =>
-                  setNewClass({ ...newClass, day: e.target.value })
-                }
-                className="select select-bordered w-full"
-              >
-                <option value="">Select Day</option>
-                {days.map((day) => (
-                  <option key={day} value={day}>
-                    {day}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                placeholder="Class Name"
-                value={newClass.name}
-                onChange={(e) =>
-                  setNewClass({ ...newClass, name: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="time"
-                placeholder="Start Time"
-                value={newClass.startTime}
-                onChange={(e) =>
-                  setNewClass({ ...newClass, startTime: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="time"
-                placeholder="End Time"
-                value={newClass.endTime}
-                onChange={(e) =>
-                  setNewClass({ ...newClass, endTime: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Weeks"
-                value={newClass.weeks}
-                onChange={(e) =>
-                  setNewClass({ ...newClass, weeks: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
+      {isAdmin && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
+          <form onSubmit={addClass} className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <select
+                  value={newClass.day}
+                  onChange={(e) =>
+                    setNewClass({ ...newClass, day: e.target.value })
+                  }
+                  className="select select-bordered w-full"
+                >
+                  <option value="">Select Day</option>
+                  {days.map((day) => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Class Name"
+                  value={newClass.name}
+                  onChange={(e) =>
+                    setNewClass({ ...newClass, name: e.target.value })
+                  }
+                  className="input input-bordered w-full"
+                />
+                <input
+                  type="time"
+                  placeholder="Start Time"
+                  value={newClass.startTime}
+                  onChange={(e) =>
+                    setNewClass({ ...newClass, startTime: e.target.value })
+                  }
+                  className="input input-bordered w-full"
+                />
+                <input
+                  type="time"
+                  placeholder="End Time"
+                  value={newClass.endTime}
+                  onChange={(e) =>
+                    setNewClass({ ...newClass, endTime: e.target.value })
+                  }
+                  className="input input-bordered w-full"
+                />
+                <input
+                  type="text"
+                  placeholder="Weeks"
+                  value={newClass.weeks}
+                  onChange={(e) =>
+                    setNewClass({ ...newClass, weeks: e.target.value })
+                  }
+                  className="input input-bordered w-full"
+                />
+              </div>
+              <div className="card-actions justify-end mt-4">
+                <button type="submit" className="btn btn-primary">
+                  Add Class
+                </button>
+              </div>
             </div>
-            <div className="card-actions justify-end mt-4">
-              <button type="submit" className="btn btn-primary">
-                Add Class
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
