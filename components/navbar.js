@@ -1,16 +1,29 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { useRouter } from 'next/navigation';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
+  authDomain: "mmc-data-93bf3.firebaseapp.com",
+  projectId: "mmc-data-93bf3",
+  storageBucket: "mmc-data-93bf3.appspot.com",
+  messagingSenderId: "435887892180",
+  appId: "1:435887892180:web:d060cc06f60d08bedd7d41",
+  measurementId: "G-Q3VDQJNV3W",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
-  const auth = getAuth();
-  const db = getFirestore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -29,14 +42,14 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      router.push('/');
+      router.push("/");
     } catch (error) {
       console.error("Error signing out: ", error);
     }
   };
 
   return (
-    <div className="w-full flex justify-between items-center p-2 bg-base-100">
+    <div className="w-screen flex justify-between items-center p-2">
       <Link href="/" className="text-3xl font-bold ml-2">
         <span className="text-yellow-400">M</span>
         <span className="text-sky-500">M</span>
@@ -49,7 +62,7 @@ export default function Navbar() {
           </Link>
         )}
         <Link className="mr-6 font-bold" href="/leaderboard">
-          Leaderboard 
+          Leaderboard
         </Link>
         {user ? (
           <button className="btn mr-1" onClick={handleLogout}>

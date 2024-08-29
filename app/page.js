@@ -5,9 +5,9 @@ import Schedule from "../components/Schedule";
 export default function Home() {
   return (
     <main>
-      <Navbar />
+
       <Hero />
-      <Schedule isAdmin={false} />
+      <Schedule id="schedule" isAdmin={false} />
     </main>
   );
 }

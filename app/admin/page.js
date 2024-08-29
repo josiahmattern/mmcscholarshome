@@ -50,7 +50,7 @@ export default function Admin() {
       <div className="w-full bg-neutral-200 p-4">
         <div className="container mx-auto flex flex-col items-center">
           <h1 className="text-3xl font-bold mb-2">Admin</h1>
-          <div className="tabs tabs-boxed ">
+          <div className="tabs bg-neutral-100 tabs-boxed ">
             <a
               className={`tab ${activeTab === "schedule" ? "tab-active" : ""}`}
               onClick={() => setActiveTab("schedule")}
