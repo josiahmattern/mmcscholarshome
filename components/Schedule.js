@@ -36,6 +36,7 @@ export default function Schedule({ isAdmin = false }) {
     weeks: "",
   });
   const [editingClass, setEditingClass] = useState(null);
+  const [deletingClass, setDeletingClass] = useState(null);
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   useEffect(() => {
@@ -81,9 +82,11 @@ export default function Schedule({ isAdmin = false }) {
     }
   };
 
-  const deleteClass = async (id) => {
+  const deleteClass = async () => {
+    if (!deletingClass) return;
     try {
-      await deleteDoc(doc(db, "schedule", id));
+      await deleteDoc(doc(db, "schedule", deletingClass));
+      setDeletingClass(null);
       fetchScheduleData();
     } catch (err) {
       setError("Error deleting class");
@@ -135,8 +138,8 @@ export default function Schedule({ isAdmin = false }) {
     );
 
   return (
-    <div className="container mx-auto p-4 mb-8">
-      <h1 className="text-3xl font-bold text-center mt-4 mb-8">Schedule</h1>
+    <div className="container mx-auto p-4 mb-8 my-auto">
+      <h1 className="text-4xl font-bold text-center mt-4 mb-8">Schedule</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2">
         {days.map((day) => (
           <div key={day} className="card bg-base-100 shadow-xl">
@@ -216,7 +219,7 @@ export default function Schedule({ isAdmin = false }) {
                             Edit
                           </button>
                           <button
-                            onClick={() => deleteClass(id)}
+                            onClick={() => setDeletingClass(id)}
                             className="btn btn-error btn-xs"
                           >
                             Delete
@@ -297,6 +300,19 @@ export default function Schedule({ isAdmin = false }) {
           </form>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <input type="checkbox" id="delete-modal" className="modal-toggle" checked={!!deletingClass} onChange={() => setDeletingClass(null)} />
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Confirm Deletion</h3>
+          <p className="py-4">Are you sure you want to delete this class? This action cannot be undone.</p>
+          <div className="modal-action">
+            <button onClick={deleteClass} className="btn btn-error">Delete</button>
+            <button onClick={() => setDeletingClass(null)} className="btn">Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import Image from "next/image";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
@@ -51,9 +52,13 @@ export default function Nav() {
   return (
     <div className="w-screen flex justify-between items-center p-2">
       <Link href="/" className="text-3xl font-bold ml-2">
-        <span className="text-yellow-400">M</span>
-        <span className="text-sky-500">M</span>
-        <span className="text-red-600">C</span>
+        <Image
+          src="/MMCLOGO.png"
+          alt="MMC Logo"
+          width={100}
+          height={100}
+          className="mt-1"
+        />
       </Link>
       <div>
         {isAdmin && (

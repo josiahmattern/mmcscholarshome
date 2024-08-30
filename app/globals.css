@@ -3,7 +3,14 @@
 @tailwind utilities;
 
 * {
+  font-family: CapitaRegular;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  scroll-behavior: smooth;
+}
+
+@font-face {
+  font-family: CapitaRegular;
+  src: url("/CapitaReg.otf") format("opentype");
 }
