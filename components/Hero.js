@@ -1,9 +1,9 @@
-import Navbar from "@/components/Navbar";
+import Nav from "@/components/Nav";
 
 export default function Hero() {
   return (
     <main className="flex flex-col h-screen">
-      <Navbar />
+      <Nav />
       <div className="flex-grow bg-base-200 flex flex-col justify-center items-center relative">
         <div className="hero-content text-center">
           <div className="max-w-md">

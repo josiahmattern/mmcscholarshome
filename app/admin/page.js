@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import Schedule from "@/components/Schedule";
-import Navbar from "/components/Navbar";
+import Nav from "@/components/Nav";
 import StudentLeaderboard from "@/components/StudentLeaderboard";
 
 const auth = getAuth();
@@ -46,7 +46,7 @@ export default function Admin() {
 
   return (
     <main>
-      <Navbar />
+      <Nav />
       <div className="w-full bg-neutral-200 p-4">
         <div className="container mx-auto flex flex-col items-center">
           <h1 className="text-3xl font-bold mb-2">Admin</h1>

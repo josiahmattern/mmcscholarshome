@@ -1,10 +1,15 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
+import { useRouter } from "next/navigation";
+import Nav from "@/components/Nav";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
@@ -38,11 +43,15 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       const userDoc = await getDoc(doc(db, "admins", user.uid));
       if (userDoc.exists()) {
-        router.push('/admin');
+        router.push("/admin");
       } else {
         setError("You don't have admin privileges.");
         await auth.signOut();
@@ -55,7 +64,7 @@ export default function Login() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      router.push('/');  // Redirect to home page after logout
+      router.push("/"); // Redirect to home page after logout
     } catch (error) {
       console.error("Error signing out: ", error);
     }
@@ -63,26 +72,30 @@ export default function Login() {
 
   return (
     <main className="flex flex-col min-h-screen">
-      <Navbar />
+      <Nav />
       <div className="flex-grow flex items-center justify-center bg-base-200 p-4">
         {user ? (
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-4">Welcome, {user.email}</h1>
-            <button onClick={handleLogout} className="btn btn-primary">Logout</button>
+            <button onClick={handleLogout} className="btn btn-primary">
+              Logout
+            </button>
           </div>
         ) : (
           <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <form className="card-body" onSubmit={handleLogin}>
-              <h1 className="text-3xl font-bold text-center mb-4">Admin Login</h1>
+              <h1 className="text-3xl font-bold text-center mb-4">
+                Admin Login
+              </h1>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
                 </label>
-                <input 
-                  type="email" 
-                  placeholder="admin@example.com" 
-                  className="input input-bordered" 
-                  required 
+                <input
+                  type="email"
+                  placeholder="admin@example.com"
+                  className="input input-bordered"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -91,18 +104,20 @@ export default function Login() {
                 <label className="label">
                   <span className="label-text">Password</span>
                 </label>
-                <input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  className="input input-bordered" 
-                  required 
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="input input-bordered"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               {error && <div className="text-error text-sm mt-2">{error}</div>}
               <div className="form-control mt-6">
-                <button className="btn btn-primary" type="submit">Login</button>
+                <button className="btn btn-primary" type="submit">
+                  Login
+                </button>
               </div>
             </form>
           </div>
