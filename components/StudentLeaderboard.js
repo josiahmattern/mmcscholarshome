@@ -12,7 +12,6 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  // Your Firebase config here
   apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
   authDomain: "mmc-data-93bf3.firebaseapp.com",
   projectId: "mmc-data-93bf3",
@@ -51,6 +50,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   const [editingStudent, setEditingStudent] = useState(null);
   const [editingTeam, setEditingTeam] = useState(null);
   const [sortBy, setSortBy] = useState("total");
+  const [graduationYearFilter, setGraduationYearFilter] = useState("all");
 
   useEffect(() => {
     fetchStudents();
@@ -63,7 +63,12 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       student.name.toLowerCase().includes(lowercasedFilter),
     );
 
-    // Sort the filtered students based on the selected sorting criteria
+    if (graduationYearFilter !== "all") {
+      filteredStuds = filteredStuds.filter(
+        (student) => student.graduationYear === graduationYearFilter,
+      );
+    }
+
     filteredStuds.sort((a, b) => {
       if (sortBy === "community") return b.communityPoints - a.communityPoints;
       if (sortBy === "project") return b.projectPoints - a.projectPoints;
@@ -80,7 +85,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       team.name.toLowerCase().includes(lowercasedFilter),
     );
     setFilteredTeams(filteredTms);
-  }, [searchTerm, students, teams, sortBy]);
+  }, [searchTerm, students, teams, sortBy, graduationYearFilter]);
 
   useEffect(() => {
     const lowercasedFilter = studentSearch.toLowerCase();
@@ -212,7 +217,6 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       try {
         await deleteDoc(doc(db, "students", id));
 
-        // Remove the student from any teams they're in
         const updatedTeams = teams.map((team) => ({
           ...team,
           members: team.members.filter((memberId) => memberId !== id),
@@ -286,6 +290,13 @@ export default function LeaderboardComponent({ isAdmin = false }) {
     }
   };
 
+  const getGraduationYears = () => {
+    const years = [
+      ...new Set(students.map((student) => student.graduationYear)),
+    ];
+    return years.sort((a, b) => a - b);
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -320,24 +331,40 @@ export default function LeaderboardComponent({ isAdmin = false }) {
         </a>
       </div>
 
-      <div className="mb-4 flex justify-between items-center">
+      <div className="mb-4 flex flex-col md:flex-row justify-between items-center">
         <input
           type="text"
           placeholder={`Search for a ${activeTab === "students" ? "student" : "team"}...`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input input-bordered w-full mr-2"
+          className="input input-bordered w-full md:mr-2"
         />
         {activeTab === "students" && (
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="select select-bordered w-full max-w-xs"
-          >
-            <option value="total">Total Points</option>
-            <option value="community">Community Points</option>
-            <option value="project">Project Points</option>
-          </select>
+          <>
+            <div className="flex w-full mt-2 md:mt-0">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="select select-bordered w-full mr-2"
+              >
+                <option value="total">Total Points</option>
+                <option value="community">Community Points</option>
+                <option value="project">Project Points</option>
+              </select>
+              <select
+                value={graduationYearFilter}
+                onChange={(e) => setGraduationYearFilter(e.target.value)}
+                className="select select-bordered w-full"
+              >
+                <option value="all">All Years</option>
+                {getGraduationYears().map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
         )}
       </div>
 
@@ -355,7 +382,6 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                       ? "Community Points"
                       : "Project Points"}
                 </th>
-                <th>Graduation Year</th>
                 <th>Project Groups</th>
                 {isAdmin && <th>Actions</th>}
               </tr>
@@ -372,7 +398,6 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                         ? student.communityPoints
                         : student.projectPoints}
                   </td>
-                  <td>{student.graduationYear}</td>
                   <td>{student.projectGroups.join(", ")}</td>
                   {isAdmin && (
                     <td>
