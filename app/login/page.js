@@ -46,7 +46,7 @@ export default function Login() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password,
+        password
       );
       const user = userCredential.user;
       const userDoc = await getDoc(doc(db, "admins", user.uid));

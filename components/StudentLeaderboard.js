@@ -1,5 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import confetti from "canvas-confetti";
+
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -37,6 +39,8 @@ export default function StudentLeaderboard({ isAdmin = false }) {
   });
   const [editingStudent, setEditingStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [topStudents, setTopStudents] = useState([]);
+  const confettiRef = useRef(null);
 
   useEffect(() => {
     fetchStudents();
@@ -44,19 +48,73 @@ export default function StudentLeaderboard({ isAdmin = false }) {
 
   useEffect(() => {
     const lowercasedFilter = searchTerm.toLowerCase();
-    const filtered = students.filter(student => 
+    const filtered = students.filter((student) =>
       student.name.toLowerCase().includes(lowercasedFilter)
     );
     setFilteredStudents(filtered);
+
+    // check if there are students in the leaderboard
+    if (filtered.length > 0) {
+      // get the highest points
+      // console.log(filtered);
+      // console.log(filtered.map((student) => student.points));
+      // console.log(filtered.map((student) => typeof student.points));
+      const validPoints = filtered
+        .map((student) => student.points)
+        .filter((point) => typeof point === "number" && !isNaN(point));
+
+      const maxPoints = Math.max(...validPoints, 0);
+      console.log(maxPoints);
+
+      // filter students who have the highest points
+      const topStudents = filtered.filter(
+        (student) => student.points === maxPoints
+      );
+      setTopStudents(topStudents);
+    } else {
+      setTopStudents([]); // No students to congrat
+    }
   }, [searchTerm, students]);
+
+  const handleCongratAnimation = useCallback(() => {
+    var end = Date.now() + 1 * 1000;
+    var colors = ["#bb0000", "#000000"];
+    (function frame() {
+      topStudents.forEach(() => {
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors,
+        });
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors,
+        });
+      });
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
+  }, [topStudents]);
+
+  useEffect(() => {
+    if (topStudents.length > 0) {
+      handleCongratAnimation();
+    }
+  }, [topStudents, handleCongratAnimation]);
 
   const fetchStudents = async () => {
     try {
       const studentsCollection = collection(db, "students");
       const studentsSnapshot = await getDocs(studentsCollection);
-      const studentList = studentsSnapshot.docs.map(doc => ({
+      const studentList = studentsSnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       const sortedStudents = studentList.sort((a, b) => b.points - a.points);
       setStudents(sortedStudents);
@@ -72,7 +130,12 @@ export default function StudentLeaderboard({ isAdmin = false }) {
     e.preventDefault();
     try {
       await addDoc(collection(db, "students"), newStudent);
-      setNewStudent({ name: "", points: 0, graduationYear: "", projectGroups: [] });
+      setNewStudent({
+        name: "",
+        points: 0,
+        graduationYear: "",
+        projectGroups: [],
+      });
       fetchStudents();
     } catch (err) {
       setError("Error adding new student");
@@ -111,13 +174,44 @@ export default function StudentLeaderboard({ isAdmin = false }) {
     setEditingStudent(null);
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen"><span className="loading loading-spinner loading-lg"></span></div>;
-  if (error) return <div className="alert alert-error shadow-lg"><div><span>{error}</span></div></div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="alert alert-error shadow-lg">
+        <div>
+          <span>{error}</span>
+        </div>
+      </div>
+    );
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold text-center mb-8 mt-4">Student Leaderboard</h1>
-      
+      {topStudents.length > 0 && (
+        <div className="flex justify-center">
+          <h1
+            ref={confettiRef}
+            onMouseEnter={handleCongratAnimation}
+            className="text-4xl inline-block hover:cursor-pointer"
+          >
+            Congratulations
+            {topStudents.map((student) => (
+              <span key={student.id} className="text-red-500 ml-2">
+                {student.name}!
+              </span>
+            ))}
+          </h1>
+        </div>
+      )}
+
+      <h1 className="text-4xl font-bold text-center mb-8 mt-4">
+        Student Leaderboard
+      </h1>
+
       <div className="mb-4">
         <input
           type="text"
@@ -151,51 +245,89 @@ export default function StudentLeaderboard({ isAdmin = false }) {
                   <td>{student.projectGroups.join(", ")}</td>
                   {isAdmin && (
                     <td>
-                      <button onClick={() => startEditing(student)} className="btn btn-xs btn-outline mr-2">Edit</button>
-                      <button onClick={() => deleteStudent(student.id)} className="btn btn-xs btn-error">Delete</button>
+                      <button
+                        onClick={() => startEditing(student)}
+                        className="btn btn-xs btn-outline mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteStudent(student.id)}
+                        className="btn btn-xs btn-error"
+                      >
+                        Delete
+                      </button>
                     </td>
                   )}
                 </tr>
-                {isAdmin && editingStudent && editingStudent.id === student.id && (
-                  <tr>
-                    <td colSpan="6">
-                      <div className="p-4 bg-base-200">
-                        <input
-                          type="text"
-                          value={editingStudent.name}
-                          onChange={(e) => handleEditChange("name", e.target.value)}
-                          className="input input-bordered w-full mb-2"
-                          placeholder="Name"
-                        />
-                        <input
-                          type="number"
-                          value={editingStudent.points}
-                          onChange={(e) => handleEditChange("points", parseInt(e.target.value))}
-                          className="input input-bordered w-full mb-2"
-                          placeholder="Points"
-                        />
-                        <input
-                          type="text"
-                          value={editingStudent.graduationYear}
-                          onChange={(e) => handleEditChange("graduationYear", e.target.value)}
-                          className="input input-bordered w-full mb-2"
-                          placeholder="Graduation Year"
-                        />
-                        <input
-                          type="text"
-                          value={editingStudent.projectGroups.join(", ")}
-                          onChange={(e) => handleEditChange("projectGroups", e.target.value.split(", "))}
-                          className="input input-bordered w-full mb-2"
-                          placeholder="Project Groups (comma-separated)"
-                        />
-                        <div className="flex justify-end mt-2">
-                          <button onClick={() => updateStudent(editingStudent.id, editingStudent)} className="btn btn-primary btn-sm mr-2">Save Changes</button>
-                          <button onClick={cancelEditing} className="btn btn-ghost btn-sm">Cancel</button>
+                {isAdmin &&
+                  editingStudent &&
+                  editingStudent.id === student.id && (
+                    <tr>
+                      <td colSpan="6">
+                        <div className="p-4 bg-base-200">
+                          <input
+                            type="text"
+                            value={editingStudent.name}
+                            onChange={(e) =>
+                              handleEditChange("name", e.target.value)
+                            }
+                            className="input input-bordered w-full mb-2"
+                            placeholder="Name"
+                          />
+                          <input
+                            type="number"
+                            value={editingStudent.points}
+                            onChange={(e) =>
+                              handleEditChange(
+                                "points",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            className="input input-bordered w-full mb-2"
+                            placeholder="Points"
+                          />
+                          <input
+                            type="text"
+                            value={editingStudent.graduationYear}
+                            onChange={(e) =>
+                              handleEditChange("graduationYear", e.target.value)
+                            }
+                            className="input input-bordered w-full mb-2"
+                            placeholder="Graduation Year"
+                          />
+                          <input
+                            type="text"
+                            value={editingStudent.projectGroups.join(", ")}
+                            onChange={(e) =>
+                              handleEditChange(
+                                "projectGroups",
+                                e.target.value.split(", ")
+                              )
+                            }
+                            className="input input-bordered w-full mb-2"
+                            placeholder="Project Groups (comma-separated)"
+                          />
+                          <div className="flex justify-end mt-2">
+                            <button
+                              onClick={() =>
+                                updateStudent(editingStudent.id, editingStudent)
+                              }
+                              className="btn btn-primary btn-sm mr-2"
+                            >
+                              Save Changes
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              className="btn btn-ghost btn-sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
+                      </td>
+                    </tr>
+                  )}
               </React.Fragment>
             ))}
           </tbody>
@@ -210,7 +342,9 @@ export default function StudentLeaderboard({ isAdmin = false }) {
               <input
                 type="text"
                 value={newStudent.name}
-                onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+                onChange={(e) =>
+                  setNewStudent({ ...newStudent, name: e.target.value })
+                }
                 className="input input-bordered w-full mb-2"
                 placeholder="Name"
                 required
@@ -218,7 +352,12 @@ export default function StudentLeaderboard({ isAdmin = false }) {
               <input
                 type="number"
                 value={newStudent.points}
-                onChange={(e) => setNewStudent({ ...newStudent, points: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setNewStudent({
+                    ...newStudent,
+                    points: parseInt(e.target.value),
+                  })
+                }
                 className="input input-bordered w-full mb-2"
                 placeholder="Points"
                 required
@@ -226,7 +365,12 @@ export default function StudentLeaderboard({ isAdmin = false }) {
               <input
                 type="text"
                 value={newStudent.graduationYear}
-                onChange={(e) => setNewStudent({ ...newStudent, graduationYear: e.target.value })}
+                onChange={(e) =>
+                  setNewStudent({
+                    ...newStudent,
+                    graduationYear: e.target.value,
+                  })
+                }
                 className="input input-bordered w-full mb-2"
                 placeholder="Graduation Year"
                 required
@@ -234,12 +378,19 @@ export default function StudentLeaderboard({ isAdmin = false }) {
               <input
                 type="text"
                 value={newStudent.projectGroups.join(", ")}
-                onChange={(e) => setNewStudent({ ...newStudent, projectGroups: e.target.value.split(", ") })}
+                onChange={(e) =>
+                  setNewStudent({
+                    ...newStudent,
+                    projectGroups: e.target.value.split(", "),
+                  })
+                }
                 className="input input-bordered w-full mb-2"
                 placeholder="Project Groups (comma-separated)"
               />
               <div className="card-actions justify-end mt-4">
-                <button type="submit" className="btn btn-primary">Add Student</button>
+                <button type="submit" className="btn btn-primary">
+                  Add Student
+                </button>
               </div>
             </div>
           </form>
