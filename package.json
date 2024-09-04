@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/third-parties": "^14.2.7",
     "bcryptjs": "^2.4.3",
     "firebase": "^10.13.0",
     "joi": "^17.13.3",
