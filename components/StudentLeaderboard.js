@@ -54,6 +54,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   const [sortBy, setSortBy] = useState("total");
   const [graduationYearFilter, setGraduationYearFilter] = useState("all");
   const [topStudents, setTopStudents] = useState([]);
+  const [topTeams, setTopTeams] = useState([]);
   const confettiRef = useRef(null);
 
   useEffect(() => {
@@ -64,12 +65,12 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   useEffect(() => {
     const lowercasedFilter = searchTerm.toLowerCase();
     let filteredStuds = students.filter((student) =>
-      student.name.toLowerCase().includes(lowercasedFilter)
+      student.name.toLowerCase().includes(lowercasedFilter),
     );
 
     if (graduationYearFilter !== "all") {
       filteredStuds = filteredStuds.filter(
-        (student) => student.graduationYear === graduationYearFilter
+        (student) => student.graduationYear === graduationYearFilter,
       );
     }
 
@@ -86,7 +87,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
     setFilteredStudents(filteredStuds);
 
     const filteredTms = teams.filter((team) =>
-      team.name.toLowerCase().includes(lowercasedFilter)
+      team.name.toLowerCase().includes(lowercasedFilter),
     );
     setFilteredTeams(filteredTms);
 
@@ -106,7 +107,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       // filter students who have the highest points
       const topStudents = filteredStuds.filter(
         (student) =>
-          student.projectPoints + student.communityPoints === maxPoints
+          student.projectPoints + student.communityPoints === maxPoints,
       );
       setTopStudents(topStudents);
     } else {
@@ -121,16 +122,18 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       topStudents.forEach(() => {
         confetti({
           particleCount: 2,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
+          angle: 65,
+          spread: 75,
+          origin: { x: 0, y: 0.4 },
+          ticks: 75,
           colors: colors,
         });
         confetti({
           particleCount: 2,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
+          angle: 115,
+          spread: 75,
+          origin: { x: 1, y: 0.4 },
+          ticks: 75,
           colors: colors,
         });
       });
@@ -149,7 +152,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   useEffect(() => {
     const lowercasedFilter = studentSearch.toLowerCase();
     const filtered = students.filter((student) =>
-      student.name.toLowerCase().includes(lowercasedFilter)
+      student.name.toLowerCase().includes(lowercasedFilter),
     );
     setFilteredStudentsForTeam(filtered);
   }, [studentSearch, students]);
@@ -166,7 +169,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
         (a, b) =>
           b.projectPoints +
           b.communityPoints -
-          (a.projectPoints + a.communityPoints)
+          (a.projectPoints + a.communityPoints),
       );
       setStudents(sortedStudents);
       setFilteredStudents(sortedStudents);
@@ -186,7 +189,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
         ...doc.data(),
       }));
       const sortedTeams = teamList.sort(
-        (a, b) => calculateTeamPoints(b) - calculateTeamPoints(a)
+        (a, b) => calculateTeamPoints(b) - calculateTeamPoints(a),
       );
       setTeams(sortedTeams);
       setFilteredTeams(sortedTeams);
@@ -199,12 +202,12 @@ export default function LeaderboardComponent({ isAdmin = false }) {
 
   const calculateTeamPoints = (team) => {
     const teamMembers = students.filter((student) =>
-      team.members.includes(student.id)
+      team.members.includes(student.id),
     );
     if (teamMembers.length === 0) return 0;
     const totalPoints = teamMembers.reduce(
       (sum, member) => sum + member.projectPoints + member.communityPoints,
-      0
+      0,
     );
     return totalPoints / teamMembers.length;
   };
@@ -374,20 +377,32 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   return (
     <div className="container mx-auto p-4">
       <div>
-        {topStudents.length > 0 && (
-          <div className="flex justify-center">
-            <h1
-              ref={confettiRef}
-              onMouseEnter={handleCongratAnimation}
-              className="text-4xl inline-block hover:cursor-pointer"
-            >
-              Congratulations
-              {topStudents.map((student) => (
-                <span key={student.id} className="text-red-500 ml-2">
-                  {student.name}!
-                </span>
-              ))}
-            </h1>
+        {activeTab === "students" && topStudents.length > 0 && (
+          <div className="mt-2 p-8 bg-neutral-100 rounded-lg shadow-md mb-8">
+            <div className="flex justify-center">
+              <h1
+                ref={confettiRef}
+                onMouseEnter={handleCongratAnimation}
+                className="text-2xl md:text-3xl inline-block"
+              >
+                Congratulations
+                <span className="text-red-500 ml-2">{students[0].name}!</span>
+              </h1>
+            </div>
+          </div>
+        )}
+        {activeTab === "teams" && teams.length > 0 && (
+          <div className="mt-2 p-8 bg-neutral-100 rounded-lg shadow-md mb-8">
+            <div className="flex justify-center">
+              <h1
+                ref={confettiRef}
+                onMouseEnter={handleCongratAnimation}
+                className="text-2xl md:text-3xl inline-block"
+              >
+                Congratulations
+                <span className="text-red-500 ml-2">{teams[0].name}!</span>
+              </h1>
+            </div>
           </div>
         )}
       </div>
@@ -458,8 +473,8 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                   {sortBy === "total"
                     ? "Total Points"
                     : sortBy === "community"
-                    ? "Community Points"
-                    : "Project Points"}
+                      ? "Community Points"
+                      : "Project Points"}
                 </th>
                 <th>Project Groups</th>
                 {isAdmin && <th>Actions</th>}
@@ -474,8 +489,8 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                     {sortBy === "total"
                       ? student.projectPoints + student.communityPoints
                       : sortBy === "community"
-                      ? student.communityPoints
-                      : student.projectPoints}
+                        ? student.communityPoints
+                        : student.projectPoints}
                   </td>
                   <td>{student.projectGroups.join(", ")}</td>
                   {isAdmin && (
@@ -519,7 +534,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                     {team.members
                       .map(
                         (memberId) =>
-                          students.find((s) => s.id === memberId)?.name
+                          students.find((s) => s.id === memberId)?.name,
                       )
                       .join(", ")}
                   </td>
@@ -718,7 +733,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                     handleEditChange(
                       "projectPoints",
                       parseInt(e.target.value),
-                      "student"
+                      "student",
                     )
                   }
                   className="input input-bordered w-full mb-2"
@@ -731,7 +746,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                     handleEditChange(
                       "communityPoints",
                       parseInt(e.target.value),
-                      "student"
+                      "student",
                     )
                   }
                   className="input input-bordered w-full mb-2"
@@ -744,7 +759,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                     handleEditChange(
                       "graduationYear",
                       e.target.value,
-                      "student"
+                      "student",
                     )
                   }
                   className="input input-bordered w-full mb-2"
@@ -757,7 +772,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
                     handleEditChange(
                       "projectGroups",
                       e.target.value.split(", "),
-                      "student"
+                      "student",
                     )
                   }
                   className="input input-bordered w-full mb-2"
