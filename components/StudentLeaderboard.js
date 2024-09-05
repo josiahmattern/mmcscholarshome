@@ -125,7 +125,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
           angle: 65,
           spread: 75,
           origin: { x: 0, y: 0.4 },
-          ticks: 75,
+          ticks: 40,
           colors: colors,
         });
         confetti({
@@ -133,7 +133,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
           angle: 115,
           spread: 75,
           origin: { x: 1, y: 0.4 },
-          ticks: 75,
+          ticks: 40,
           colors: colors,
         });
       });
@@ -382,7 +382,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
             <div className="flex justify-center">
               <h1
                 ref={confettiRef}
-                onMouseEnter={handleCongratAnimation}
+                //onMouseEnter={handleCongratAnimation}
                 className="text-2xl md:text-3xl inline-block"
               >
                 Congratulations
@@ -396,7 +396,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
             <div className="flex justify-center">
               <h1
                 ref={confettiRef}
-                onMouseEnter={handleCongratAnimation}
+                //onMouseEnter={handleCongratAnimation}
                 className="text-2xl md:text-3xl inline-block"
               >
                 Congratulations
