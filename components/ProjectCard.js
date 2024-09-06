@@ -1,18 +1,28 @@
+import Link from "next/link";
+
 export default function ProjectCard(props) {
   return (
-    <main>
-      <div className="card bg-base-100 w-96 shadow-lg">
-        <iframe
-          className="w-full aspect-video self-stretch rounded-t-lg"
-          src={props.id}
-          title={props.title}
-          aria-hidden="true"
-        />
-        <div className="card-body">
-          <h2 className="card-title">{props.title}</h2>
-          <p>If a dog chews shoes whose shoes does he choose?</p>
+    <div className="flex justify-center w-full">
+      <div className="card bg-base-100 shadow-md h-60 max-w-lg w-full">
+        <div className="card-body flex flex-col h-full">
+          <h2 className="card-title text-2xl text-sky-400 mb-2">
+            <Link
+              className="hover:text-sky-600"
+              href={props.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {props.title}
+            </Link>
+          </h2>
+          <div className="flex-grow overflow-auto">
+            <p>{props.desc}</p>
+          </div>
+          <div className="">
+            <p>Length: {props.length} weeks</p>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
