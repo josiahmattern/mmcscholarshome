@@ -5,8 +5,8 @@ export default function Hero() {
   return (
     <main className="flex flex-col h-screen">
       <Nav />
-      <div className="flex-grow bg-base-200 flex flex-col justify-center items-center relative">
-        <div className="hero-content text-center">
+      <div className="flex-grow bg-[url('/splatters.png')] bg-cover flex flex-col justify-center items-center relative">
+        <div className="hero-content text-center rounded-md bg-gray-300 bg-opacity-70">
           <div className="max-w-lg">
             <h1 className="text-5xl font-bold">Welcome to the</h1>
             <Image
