@@ -10,6 +10,8 @@ import {
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav";
+import Notification from "@/components/Notification";
+import { toast } from "react-toastify";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
@@ -53,11 +55,15 @@ export default function Login() {
       if (userDoc.exists()) {
         router.push("/admin");
       } else {
-        setError("You don't have admin privileges.");
+        toast.error("You don't have admin privileges.", {
+          position: "top-right",
+        });
         await auth.signOut();
       }
     } catch (error) {
-      setError("Invalid email or password.");
+      toast.error("Invalid email or password.", {
+        position: "top-right",
+      });
     }
   };
 
@@ -123,6 +129,7 @@ export default function Login() {
           </div>
         )}
       </div>
+      <Notification />
     </main>
   );
 }
