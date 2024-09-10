@@ -53,7 +53,14 @@ export default function Login() {
       const user = userCredential.user;
       const userDoc = await getDoc(doc(db, "admins", user.uid));
       if (userDoc.exists()) {
-        router.push("/admin");
+        toast.success("Login Successful!!!", {
+          position: "top-right",
+          autoClose: 1500,
+        });
+
+        setTimeout(() => {
+          router.push("/admin");
+        }, 1500);
       } else {
         toast.error("You don't have admin privileges.", {
           position: "top-right",

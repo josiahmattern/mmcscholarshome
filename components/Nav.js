@@ -7,8 +7,6 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import Notification from "./Notification";
-import { toast } from "react-toastify";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
@@ -36,11 +34,6 @@ export default function Nav() {
       if (currentUser) {
         const userDoc = await getDoc(doc(db, "admins", currentUser.uid));
         setIsAdmin(userDoc.exists());
-        if (userDoc.exists()) {
-          toast.success("Login Successful!!!", {
-            position: "top-right",
-          });
-        }
       } else {
         setIsAdmin(false);
       }
@@ -165,7 +158,6 @@ export default function Nav() {
           )}
         </div>
       </div>
-      <Notification />
     </nav>
   );
 }
