@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav";
 import Notification from "@/components/Notification";
 import { toast } from "react-toastify";
+import { PulseLoader } from "react-spinners";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
@@ -32,6 +33,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [loader, setLoader] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -44,6 +46,8 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoader(true);
+
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -71,6 +75,10 @@ export default function Login() {
       toast.error("Invalid email or password.", {
         position: "top-right",
       });
+    } finally {
+      setTimeout(() => {
+        setLoader(false);
+      }, 500);
     }
   };
 
@@ -128,8 +136,13 @@ export default function Login() {
               </div>
               {error && <div className="text-error text-sm mt-2">{error}</div>}
               <div className="form-control mt-6">
-                <button className="btn btn-primary" type="submit">
-                  Login
+                <button
+                  className="btn btn-primary"
+                  type="submit"
+                  disabled={loader}
+                >
+                  {loader ? "Loading..." : "Login"}
+                  <PulseLoader size={10} loading={loader} />
                 </button>
               </div>
             </form>
