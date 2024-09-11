@@ -9,11 +9,15 @@ import { ref, get } from "firebase/database";
 import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav";
 import { auth, db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
+import Notification from "@/components/Notification";
+import { toast } from 'react-toastify';
+import { PulseLoader } from "react-spinners";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loader, setLoader] = useState(false);
   const [user, setUser] = useState(null);
   const router = useRouter();
 
@@ -37,13 +41,24 @@ export default function Login() {
       const adminRef = ref(db, `admins/${user.uid}`);
       const adminSnapshot = await get(adminRef);
       if (adminSnapshot.exists()) {
-        router.push("/admin");
+        toast.success("Login Successful!!!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+
+        setTimeout(() => {
+          router.push("/admin");
+        }, 1500);
       } else {
-        setError("You don't have admin privileges.");
+        toast.error("You don't have admin privileges.", {
+          position: "top-right",
+        });
         await signOut(auth);
       }
     } catch (error) {
-      setError("Invalid email or password.");
+      toast.error("Invalid email or password", {
+        position: "top-right",
+      });
     }
   };
 
@@ -101,14 +116,20 @@ export default function Login() {
               </div>
               {error && <div className="text-error text-sm mt-2">{error}</div>}
               <div className="form-control mt-6">
-                <button className="btn btn-primary" type="submit">
-                  Login
+                <button
+                  className="btn btn-primary"
+                  type="submit"
+                  disabled={loader}
+                >
+                  {loader ? "Loading..." : "Login"}
+                  <PulseLoader size={10} loading={loader} />
                 </button>
               </div>
             </form>
           </div>
         )}
       </div>
+      <Notification />
     </main>
   );
 }
