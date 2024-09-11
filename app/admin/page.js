@@ -1,33 +1,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { ref, get, set, push } from "firebase/database";
+import Papa from "papaparse";
 import Schedule from "@/components/Schedule";
 import Nav from "@/components/Nav";
 import StudentLeaderboard from "@/components/StudentLeaderboard";
-
-const auth = getAuth();
-const db = getFirestore();
+import { auth, db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("schedule");
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [file, setFile] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // Check if the user is an admin
-        const adminRef = doc(db, "admins", user.uid);
-        const adminSnap = await getDoc(adminRef);
+        const adminRef = ref(db, `admins/${user.uid}`);
+        const adminSnap = await get(adminRef);
         if (adminSnap.exists()) {
           setIsAdmin(true);
         } else {
@@ -44,11 +38,15 @@ export default function Admin() {
   const exportToCSV = async () => {
     try {
       // Fetch students data
-      const studentsSnapshot = await getDocs(collection(db, "students"));
-      const studentsData = studentsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const studentsRef = ref(db, "students");
+      const studentsSnapshot = await get(studentsRef);
+      const studentsData = [];
+      studentsSnapshot.forEach((childSnapshot) => {
+        studentsData.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val(),
+        });
+      });
 
       // Create a mapping of student IDs to names
       const studentIdToName = {};
@@ -57,15 +55,23 @@ export default function Admin() {
       });
 
       // Fetch teams data
-      const teamsSnapshot = await getDocs(collection(db, "teams"));
-      const teamsData = teamsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const teamsRef = ref(db, "teams");
+      const teamsSnapshot = await get(teamsRef);
+      const teamsData = [];
+      teamsSnapshot.forEach((childSnapshot) => {
+        teamsData.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val(),
+        });
+      });
 
       // Fetch schedule data
-      const scheduleSnapshot = await getDocs(collection(db, "schedule"));
-      const scheduleData = scheduleSnapshot.docs.map((doc) => doc.data());
+      const scheduleRef = ref(db, "schedule");
+      const scheduleSnapshot = await get(scheduleRef);
+      const scheduleData = [];
+      scheduleSnapshot.forEach((childSnapshot) => {
+        scheduleData.push(childSnapshot.val());
+      });
 
       // Create CSV content
       let csvContent = "data:text/csv;charset=utf-8,";
@@ -107,6 +113,91 @@ export default function Admin() {
     }
   };
 
+  const sanitizePath = (path) => {
+    return path.replace(/[.#$[\]]/g, "_");
+  };
+
+  const importFromCSV = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      Papa.parse(file, {
+        complete: async (result) => {
+          const { data } = result;
+          try {
+            let currentSection = "";
+            for (const row of data) {
+              if (
+                row[0] === "Students" ||
+                row[0] === "Teams" ||
+                row[0] === "Schedule"
+              ) {
+                currentSection = row[0];
+                continue; // Skip the header row
+              }
+              if (row[0] === "Name" || row[0] === "Day") continue; // Skip column headers
+
+              switch (currentSection) {
+                case "Students":
+                  if (row[0] && row[1]) {
+                    // Check if name and student ID exist
+                    const sanitizedStudentId = sanitizePath(row[1]);
+                    await set(ref(db, `students/${sanitizedStudentId}`), {
+                      name: row[0],
+                      studentId: row[1], // Keep the original ID in the data
+                      projectPoints: Number(row[2]) || 0,
+                      communityPoints: Number(row[3]) || 0,
+                      graduationYear: Number(row[4]) || 0,
+                      projectGroups: row[5]
+                        ? row[5]
+                            .split(", ")
+                            .filter((group) => group !== '""' && group !== "")
+                        : [],
+                    });
+                    console.log(`Imported student: ${row[0]}`);
+                  }
+                  break;
+                case "Teams":
+                  if (row[0]) {
+                    // Check if team name exists
+                    const sanitizedTeamName = sanitizePath(row[0]);
+                    await set(ref(db, `teams/${sanitizedTeamName}`), {
+                      name: row[0],
+                      members: row[1]
+                        ? row[1].split(", ").filter((member) => member !== "")
+                        : [],
+                    });
+                    console.log(`Imported team: ${row[0]}`);
+                  }
+                  break;
+                case "Schedule":
+                  if (row[0] && row[1]) {
+                    // Check if day and name exist
+                    await push(ref(db, "schedule"), {
+                      day: row[0],
+                      name: row[1],
+                      startTime: row[2] || "",
+                      endTime: row[3] || "",
+                      weeks: row[4] || "",
+                    });
+                    console.log(`Imported schedule event: ${row[1]}`);
+                  }
+                  break;
+              }
+            }
+            alert("Data imported successfully.");
+          } catch (error) {
+            console.error("Error importing data: ", error);
+            alert(`An error occurred while importing data: ${error.message}`);
+          }
+        },
+        error: (error) => {
+          console.error("Error parsing CSV: ", error);
+          alert(`Error parsing CSV: ${error.message}`);
+        },
+      });
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -138,11 +229,20 @@ export default function Admin() {
           <button onClick={exportToCSV} className="btn btn-primary mb-4">
             Export All Data to CSV
           </button>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={importFromCSV}
+            className="btn btn-secondary mb-4"
+          />
         </div>
       </div>
       <div className="p-4">
-        {activeTab === "schedule" && <Schedule isAdmin={true} />}
-        {activeTab === "leaderboard" && <StudentLeaderboard isAdmin={true} />}
+        {activeTab === "schedule" ? (
+          <Schedule isAdmin="true" />
+        ) : (
+          <StudentLeaderboard isAdmin="true" />
+        )}
       </div>
     </main>
   );

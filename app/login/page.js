@@ -1,29 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { initializeApp } from "firebase/app";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { ref, get } from "firebase/database";
 import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
-  authDomain: "mmc-data-93bf3.firebaseapp.com",
-  projectId: "mmc-data-93bf3",
-  storageBucket: "mmc-data-93bf3.appspot.com",
-  messagingSenderId: "435887892180",
-  appId: "1:435887892180:web:d060cc06f60d08bedd7d41",
-  measurementId: "G-Q3VDQJNV3W",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import { auth, db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -46,15 +31,16 @@ export default function Login() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       const user = userCredential.user;
-      const userDoc = await getDoc(doc(db, "admins", user.uid));
-      if (userDoc.exists()) {
+      const adminRef = ref(db, `admins/${user.uid}`);
+      const adminSnapshot = await get(adminRef);
+      if (adminSnapshot.exists()) {
         router.push("/admin");
       } else {
         setError("You don't have admin privileges.");
-        await auth.signOut();
+        await signOut(auth);
       }
     } catch (error) {
       setError("Invalid email or password.");

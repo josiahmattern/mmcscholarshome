@@ -1,28 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  setDoc,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
-  authDomain: "mmc-data-93bf3.firebaseapp.com",
-  projectId: "mmc-data-93bf3",
-  storageBucket: "mmc-data-93bf3.appspot.com",
-  messagingSenderId: "435887892180",
-  appId: "1:435887892180:web:d060cc06f60d08bedd7d41",
-  measurementId: "G-Q3VDQJNV3W",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { ref, onValue, push, set, update, remove } from "firebase/database";
+import { db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
 
 export default function Schedule({ isAdmin = false }) {
   const [scheduleData, setScheduleData] = useState({});
@@ -40,32 +19,32 @@ export default function Schedule({ isAdmin = false }) {
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   useEffect(() => {
-    fetchScheduleData();
-  }, []);
+    const scheduleRef = ref(db, "schedule");
+    const unsubscribe = onValue(
+      scheduleRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setScheduleData(snapshot.val());
+        } else {
+          setScheduleData({});
+        }
+        setLoading(false);
+      },
+      (error) => {
+        setError("Error fetching schedule data");
+        setLoading(false);
+      },
+    );
 
-  const fetchScheduleData = async () => {
-    try {
-      const scheduleCollection = collection(db, "schedule");
-      const scheduleSnapshot = await getDocs(scheduleCollection);
-      const fetchedData = {};
-      scheduleSnapshot.forEach((doc) => {
-        fetchedData[doc.id] = doc.data();
-      });
-      setScheduleData(fetchedData);
-      setLoading(false);
-    } catch (err) {
-      setError("Error fetching schedule data");
-      setLoading(false);
-    }
-  };
+    return () => unsubscribe();
+  }, []);
 
   const addClass = async (e) => {
     e.preventDefault();
     try {
-      const newClassRef = doc(collection(db, "schedule"));
-      await setDoc(newClassRef, newClass);
+      const newClassRef = push(ref(db, "schedule"));
+      await set(newClassRef, newClass);
       setNewClass({ day: "", name: "", startTime: "", endTime: "", weeks: "" });
-      fetchScheduleData();
     } catch (err) {
       setError("Error adding new class");
     }
@@ -73,10 +52,9 @@ export default function Schedule({ isAdmin = false }) {
 
   const updateClass = async (id, updatedData) => {
     try {
-      const classRef = doc(db, "schedule", id);
-      await updateDoc(classRef, updatedData);
+      const classRef = ref(db, `schedule/${id}`);
+      await update(classRef, updatedData);
       setEditingClass(null);
-      fetchScheduleData();
     } catch (err) {
       setError("Error updating class");
     }
@@ -85,9 +63,9 @@ export default function Schedule({ isAdmin = false }) {
   const deleteClass = async () => {
     if (!deletingClass) return;
     try {
-      await deleteDoc(doc(db, "schedule", deletingClass));
+      const classRef = ref(db, `schedule/${deletingClass}`);
+      await remove(classRef);
       setDeletingClass(null);
-      fetchScheduleData();
     } catch (err) {
       setError("Error deleting class");
     }
@@ -302,14 +280,27 @@ export default function Schedule({ isAdmin = false }) {
       )}
 
       {/* Delete Confirmation Modal */}
-      <input type="checkbox" id="delete-modal" className="modal-toggle" checked={!!deletingClass} onChange={() => setDeletingClass(null)} />
+      <input
+        type="checkbox"
+        id="delete-modal"
+        className="modal-toggle"
+        checked={!!deletingClass}
+        onChange={() => setDeletingClass(null)}
+      />
       <div className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Confirm Deletion</h3>
-          <p className="py-4">Are you sure you want to delete this class? This action cannot be undone.</p>
+          <p className="py-4">
+            Are you sure you want to delete this class? This action cannot be
+            undone.
+          </p>
           <div className="modal-action">
-            <button onClick={deleteClass} className="btn btn-error">Delete</button>
-            <button onClick={() => setDeletingClass(null)} className="btn">Cancel</button>
+            <button onClick={deleteClass} className="btn btn-error">
+              Delete
+            </button>
+            <button onClick={() => setDeletingClass(null)} className="btn">
+              Cancel
+            </button>
           </div>
         </div>
       </div>
