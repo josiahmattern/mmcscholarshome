@@ -42,10 +42,10 @@ export default function Nav() {
   };
 
   return (
-    <nav className="w-full bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="w-screen bg-white shadow-sm">
+      <div className="w-full mx-auto px-4 mb-1">
         <div className="flex justify-between h-16">
-          <div className="flex-shrink-0 flex items-center">
+          <div className=" flex items-center">
             <Link href="/" className="text-3xl font-bold">
               <Image
                 src="/MMCLOGO.png"
