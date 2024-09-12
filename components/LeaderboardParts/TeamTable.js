@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
   const calculateAveragePoints = (team) => {
@@ -15,6 +16,7 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
       <thead>
         <tr>
           <th>Rank</th>
+          <th>Image</th>
           <th>Team Name</th>
           <th>Average Points</th>
           <th>Members</th>
@@ -25,7 +27,27 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
         {teams.map((team, index) => (
           <tr key={team.id}>
             <td>{index + 1}</td>
-            <td>{team.name}</td>
+            <td>
+              <div className="avatar">
+                <div className="mask mask-squircle w-12 h-12">
+                  {team.imageUrl ? (
+                    <Image 
+                      width={48}
+                      height={48}
+                      src={team.imageUrl} 
+                      alt={team.name} 
+                    />
+                  ) : (
+                    <div className="bg-gray-200 w-full h-full flex items-center justify-center text-gray-500">
+                      No Image
+                    </div>
+                  )}
+                </div>
+              </div>
+            </td>
+            <td>
+              <div className="font-bold">{team.name}</div>
+            </td>
             <td>{calculateAveragePoints(team)}</td>
             <td>
               {team.members ? team.members.join(", ") : "No members"}

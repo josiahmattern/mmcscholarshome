@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import StudentSelectionList from "@/components/LeaderboardParts/StudentSelectionList";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebaseConfig.js";
+import StudentSelectionList from "./StudentSelectionList";
 import { motion, AnimatePresence } from "framer-motion";
 
 const AdminActions = ({ activeTab, onAddStudent, onAddTeam, students }) => {
@@ -11,7 +13,8 @@ const AdminActions = ({ activeTab, onAddStudent, onAddTeam, students }) => {
     graduationYear: "",
     projectGroups: [],
   });
-  const [newTeam, setNewTeam] = useState({ name: "", members: [] });
+  const [newTeam, setNewTeam] = useState({ name: "", members: [], imageUrl: "" });
+  const [imageFile, setImageFile] = useState(null);
 
   const handleAddStudent = (e) => {
     e.preventDefault();
@@ -26,21 +29,30 @@ const AdminActions = ({ activeTab, onAddStudent, onAddTeam, students }) => {
     });
   };
 
-  const handleAddTeam = (e) => {
+  const handleAddTeam = async (e) => {
     e.preventDefault();
-    onAddTeam(newTeam);
-    setNewTeam({ name: "", members: [] });
+    if (imageFile) {
+      const imageRef = storageRef(storage, `team-images/${newTeam.name}`);
+      await uploadBytes(imageRef, imageFile);
+      const imageUrl = await getDownloadURL(imageRef);
+      onAddTeam({ ...newTeam, imageUrl });
+    } else {
+      onAddTeam(newTeam);
+    }
+    setNewTeam({ name: "", members: [], imageUrl: "" });
+    setImageFile(null);
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
   };
 
   const formVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 300, damping: 30 },
-      transition: { duration: 0.2 },
-    },
-    exit: { opacity: 0, y: 50, transition: { duration: 0.2 } },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
+    exit: { opacity: 0, y: 50, transition: { duration: 0.2 } }
   };
 
   return (
@@ -62,68 +74,45 @@ const AdminActions = ({ activeTab, onAddStudent, onAddTeam, students }) => {
               type="text"
               placeholder="Name"
               value={newStudent.name}
-              onChange={(e) =>
-                setNewStudent({ ...newStudent, name: e.target.value })
-              }
+              onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
               className="input input-bordered w-full mb-2"
             />
             <input
               type="text"
               placeholder="Student ID"
               value={newStudent.studentId}
-              onChange={(e) =>
-                setNewStudent({ ...newStudent, studentId: e.target.value })
-              }
+              onChange={(e) => setNewStudent({ ...newStudent, studentId: e.target.value })}
               className="input input-bordered w-full mb-2"
             />
             <input
               type="number"
               placeholder="Community Points"
               value={newStudent.communityPoints}
-              onChange={(e) =>
-                setNewStudent({
-                  ...newStudent,
-                  communityPoints: parseInt(e.target.value),
-                })
-              }
+              onChange={(e) => setNewStudent({ ...newStudent, communityPoints: parseInt(e.target.value) })}
               className="input input-bordered w-full mb-2"
             />
             <input
               type="number"
               placeholder="Project Points"
               value={newStudent.projectPoints}
-              onChange={(e) =>
-                setNewStudent({
-                  ...newStudent,
-                  projectPoints: parseInt(e.target.value),
-                })
-              }
+              onChange={(e) => setNewStudent({ ...newStudent, projectPoints: parseInt(e.target.value) })}
               className="input input-bordered w-full mb-2"
             />
             <input
               type="number"
               placeholder="Graduation Year"
               value={newStudent.graduationYear}
-              onChange={(e) =>
-                setNewStudent({ ...newStudent, graduationYear: e.target.value })
-              }
+              onChange={(e) => setNewStudent({ ...newStudent, graduationYear: e.target.value })}
               className="input input-bordered w-full mb-2"
             />
             <input
               type="text"
               placeholder="Project Groups (comma-separated)"
               value={newStudent.projectGroups.join(", ")}
-              onChange={(e) =>
-                setNewStudent({
-                  ...newStudent,
-                  projectGroups: e.target.value.split(", "),
-                })
-              }
+              onChange={(e) => setNewStudent({ ...newStudent, projectGroups: e.target.value.split(", ").filter(group => group.trim() !== "") })}
               className="input input-bordered w-full mb-2"
             />
-            <button type="submit" className="btn btn-primary">
-              Add Student
-            </button>
+            <button type="submit" className="btn btn-primary">Add Student</button>
           </motion.form>
         ) : (
           <motion.form
@@ -146,13 +135,15 @@ const AdminActions = ({ activeTab, onAddStudent, onAddTeam, students }) => {
             <StudentSelectionList
               students={students}
               selectedStudents={newTeam.members}
-              onSelectionChange={(members) =>
-                setNewTeam({ ...newTeam, members })
-              }
+              onSelectionChange={(members) => setNewTeam({ ...newTeam, members })}
             />
-            <button type="submit" className="btn btn-primary">
-              Add Team
-            </button>
+            <input
+              type="file"
+              onChange={handleImageChange}
+              accept="image/*"
+              className="file-input file-input-bordered w-full mb-2"
+            />
+            <button type="submit" className="btn btn-primary">Add Team</button>
           </motion.form>
         )}
       </AnimatePresence>

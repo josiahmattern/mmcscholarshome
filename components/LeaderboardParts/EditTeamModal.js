@@ -1,11 +1,27 @@
 import React, { useState } from "react";
-import StudentSelectionList from "@/components/LeaderboardParts/StudentSelectionList";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebaseConfig.js";
+import StudentSelectionList from "./StudentSelectionList";
 
 const EditTeamModal = ({ team, students, onSave, onCancel }) => {
   const [editingTeam, setEditingTeam] = useState(team);
+  const [imageFile, setImageFile] = useState(null);
 
-  const handleSave = () => {
-    onSave(editingTeam);
+  const handleSave = async () => {
+    let updatedTeam = { ...editingTeam };
+    if (imageFile) {
+      const imageRef = storageRef(storage, `team-images/${editingTeam.name}`);
+      await uploadBytes(imageRef, imageFile);
+      const imageUrl = await getDownloadURL(imageRef);
+      updatedTeam.imageUrl = imageUrl;
+    }
+    onSave(updatedTeam);
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
   };
 
   return (
@@ -23,6 +39,17 @@ const EditTeamModal = ({ team, students, onSave, onCancel }) => {
           selectedStudents={editingTeam.members}
           onSelectionChange={(members) => setEditingTeam({ ...editingTeam, members })}
         />
+        <input
+          type="file"
+          onChange={handleImageChange}
+          accept="image/*"
+          className="file-input file-input-bordered w-full mb-2"
+        />
+        {editingTeam.imageUrl && (
+          <div className="mb-2">
+            <img src={editingTeam.imageUrl} alt="Team" className="w-full h-32 object-cover rounded" />
+          </div>
+        )}
         <div className="flex justify-end">
           <button onClick={handleSave} className="btn btn-primary mr-2">Save</button>
           <button onClick={onCancel} className="btn">Cancel</button>
