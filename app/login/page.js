@@ -1,39 +1,24 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { initializeApp } from "firebase/app";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { ref, get } from "firebase/database";
 import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav";
+import { auth, db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
 import Notification from "@/components/Notification";
 import { toast } from "react-toastify";
 import { PulseLoader } from "react-spinners";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
-  authDomain: "mmc-data-93bf3.firebaseapp.com",
-  projectId: "mmc-data-93bf3",
-  storageBucket: "mmc-data-93bf3.appspot.com",
-  messagingSenderId: "435887892180",
-  appId: "1:435887892180:web:d060cc06f60d08bedd7d41",
-  measurementId: "G-Q3VDQJNV3W",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
   const [loader, setLoader] = useState(false);
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -46,8 +31,6 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoader(true);
-
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -55,11 +38,12 @@ export default function Login() {
         password
       );
       const user = userCredential.user;
-      const userDoc = await getDoc(doc(db, "admins", user.uid));
-      if (userDoc.exists()) {
+      const adminRef = ref(db, `admins/${user.uid}`);
+      const adminSnapshot = await get(adminRef);
+      if (adminSnapshot.exists()) {
         toast.success("Login Successful!!!", {
           position: "top-right",
-          autoClose: 1500,
+          autoClose: 1000,
         });
 
         setTimeout(() => {
@@ -69,16 +53,12 @@ export default function Login() {
         toast.error("You don't have admin privileges.", {
           position: "top-right",
         });
-        await auth.signOut();
+        await signOut(auth);
       }
     } catch (error) {
-      toast.error("Invalid email or password.", {
+      toast.error("Invalid email or password", {
         position: "top-right",
       });
-    } finally {
-      setTimeout(() => {
-        setLoader(false);
-      }, 500);
     }
   };
 

@@ -2,25 +2,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { ref, get } from "firebase/database";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA5RmKXcwcIQl7s23PxmytmSgEFtaJwhQI",
-  authDomain: "mmc-data-93bf3.firebaseapp.com",
-  projectId: "mmc-data-93bf3",
-  storageBucket: "mmc-data-93bf3.appspot.com",
-  messagingSenderId: "435887892180",
-  appId: "1:435887892180:web:d060cc06f60d08bedd7d41",
-  measurementId: "G-Q3VDQJNV3W",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import { auth, db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
 
 export default function Nav() {
   const [user, setUser] = useState(null);
@@ -32,8 +18,9 @@ export default function Nav() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        const userDoc = await getDoc(doc(db, "admins", currentUser.uid));
-        setIsAdmin(userDoc.exists());
+        const userRef = ref(db, `admins/${currentUser.uid}`);
+        const userSnap = await get(userRef);
+        setIsAdmin(userSnap.exists());
       } else {
         setIsAdmin(false);
       }
