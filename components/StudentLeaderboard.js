@@ -1,10 +1,15 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ref, onValue, push, set, update, remove } from "firebase/database";
 import { db } from "@/lib/firebaseConfig.js";
-import CongratsBanner from "@/components/CongratsBanner";
+import CongratsBanner from "@/components/LeaderboardParts/CongratsBanner";
+import SearchInput from "@/components/LeaderboardParts/SearchInput";
+import StudentTable from "@/components/LeaderboardParts/StudentTable";
+import TeamTable from "@/components/LeaderboardParts/TeamTable";
+import AdminActions from "@/components/LeaderboardParts/AdminActions";
+import EditStudentModal from "@/components/LeaderboardParts/EditStudentModal";
+import EditTeamModal from "@/components/LeaderboardParts/EditTeamModal";
 
-export default function LeaderboardComponent({ isAdmin = false }) {
+const LeaderboardComponent = ({ isAdmin = false }) => {
   const [students, setStudents] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,17 +18,10 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingStudent, setEditingStudent] = useState(null);
   const [editingTeam, setEditingTeam] = useState(null);
-  const [newStudent, setNewStudent] = useState({
-    name: "",
-    studentId: "",
-    communityPoints: 0,
-    projectPoints: 0,
-    graduationYear: "",
-    projectGroups: [],
-  });
-  const [newTeam, setNewTeam] = useState({ name: "", members: [] });
   const [graduationYearFilter, setGraduationYearFilter] = useState("all");
   const [sortBy, setSortBy] = useState("totalPoints");
+  const [showAdminActions, setShowAdminActions] = useState(false);
+  const adminActionsRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,47 +103,49 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       return bPoints - aPoints;
     });
 
-  const handleAddStudent = async (e) => {
-    e.preventDefault();
+  const handleAddButtonClick = () => {
+    setShowAdminActions(!showAdminActions);
+    // If we're showing the admin actions, scroll to it after a short delay
+    // to allow for any animations or state updates to complete
+    if (!showAdminActions) {
+      setTimeout(() => {
+        adminActionsRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
+
+  const handleAddStudent = async (newStudent) => {
     try {
       const newStudentRef = push(ref(db, "students"));
       await set(newStudentRef, newStudent);
-      setNewStudent({
-        name: "",
-        studentId: "",
-        communityPoints: 0,
-        projectPoints: 0,
-        graduationYear: "",
-        projectGroups: [],
-      });
+      setShowAdminActions(false); // Hide the form after adding
     } catch (error) {
       console.error("Error adding student:", error);
     }
   };
 
-  const handleAddTeam = async (e) => {
-    e.preventDefault();
+  const handleAddTeam = async (newTeam) => {
     try {
       const newTeamRef = push(ref(db, "teams"));
       await set(newTeamRef, newTeam);
-      setNewTeam({ name: "", members: [] });
+      setShowAdminActions(false); // Hide the form after adding
     } catch (error) {
       console.error("Error adding team:", error);
     }
   };
 
-  const handleUpdateStudent = async () => {
+  const handleUpdateStudent = async (updatedStudent) => {
     try {
-      await update(ref(db, `students/${editingStudent.id}`), editingStudent);
+      await update(ref(db, `students/${updatedStudent.id}`), updatedStudent);
       setEditingStudent(null);
     } catch (error) {
       console.error("Error updating student:", error);
     }
   };
 
-  const handleUpdateTeam = async () => {
+  const handleUpdateTeam = async (updatedTeam) => {
     try {
-      await update(ref(db, `teams/${editingTeam.id}`), editingTeam);
+      await update(ref(db, `teams/${updatedTeam.id}`), updatedTeam);
       setEditingTeam(null);
     } catch (error) {
       console.error("Error updating team:", error);
@@ -173,10 +173,10 @@ export default function LeaderboardComponent({ isAdmin = false }) {
   };
 
   const getGraduationYears = () => {
-    const years = [
-      ...new Set(students.map((student) => student.graduationYear)),
-    ];
-    return years.filter((year) => year).sort((a, b) => a - b);
+    const years = students
+      .map((student) => parseInt(student.graduationYear, 10))
+      .filter((year) => !isNaN(year) && year > 0);
+    return [...new Set(years)].sort((a, b) => a - b);
   };
 
   if (loading)
@@ -201,10 +201,7 @@ export default function LeaderboardComponent({ isAdmin = false }) {
           activeTab === "students" ? filteredStudents[0] : filteredTeams[0]
         }
         entityType={activeTab}
-        filterInfo={{
-          pointType: sortBy,
-          graduationYear: graduationYearFilter,
-        }}
+        filterInfo={{ pointType: sortBy, graduationYear: graduationYearFilter }}
       />
 
       <h1 className="text-4xl font-bold text-center mb-8">Leaderboard</h1>
@@ -212,32 +209,35 @@ export default function LeaderboardComponent({ isAdmin = false }) {
       <div className="tabs tabs-boxed mb-4">
         <a
           className={`tab ${activeTab === "students" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("students")}
+          onClick={() => {
+            setActiveTab("students");
+            setShowAdminActions(false);
+          }}
         >
           Students
         </a>
         <a
           className={`tab ${activeTab === "teams" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("teams")}
+          onClick={() => {
+            setActiveTab("teams");
+            setShowAdminActions(false);
+          }}
         >
           Teams
         </a>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Search..."
+      <div className="mb-4 flex flex-col md:flex-row justify-between items-center">
+        <SearchInput
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input input-bordered flex-grow"
         />
         {activeTab === "students" && (
-          <>
+          <div className="flex w-full mt-2 md:mt-0">
             <select
               value={graduationYearFilter}
               onChange={(e) => setGraduationYearFilter(e.target.value)}
-              className="select select-bordered"
+              className="select select-bordered w-full mr-2"
             >
               <option value="all">All Years</option>
               {getGraduationYears().map((year) => (
@@ -249,353 +249,75 @@ export default function LeaderboardComponent({ isAdmin = false }) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="select select-bordered"
+              className="select select-bordered w-full"
             >
               <option value="totalPoints">Total Points</option>
               <option value="communityPoints">Community Points</option>
               <option value="projectPoints">Project Points</option>
             </select>
-          </>
+          </div>
         )}
       </div>
 
       <div className="overflow-x-auto">
         {activeTab === "students" ? (
-          <table className="table w-full">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>
-                  {sortBy === "totalPoints"
-                    ? "Total Points"
-                    : sortBy === "communityPoints"
-                      ? "Community Points"
-                      : "Project Points"}
-                </th>
-                <th>Project Groups</th>
-                {isAdmin && <th>Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStudents.map((student, index) => (
-                <tr key={student.id}>
-                  <td>{index + 1}</td>
-                  <td>{student.name}</td>
-                  <td>
-                    {sortBy === "totalPoints"
-                      ? student.totalPoints
-                      : sortBy === "communityPoints"
-                        ? student.communityPoints
-                        : student.projectPoints}
-                  </td>
-                  <td>
-                    {student.projectGroups
-                      ? student.projectGroups.join(", ")
-                      : "None"}
-                  </td>
-                  {isAdmin && (
-                    <td>
-                      <button
-                        className="btn btn-xs btn-outline mr-2"
-                        onClick={() => setEditingStudent(student)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-xs btn-error"
-                        onClick={() => handleDeleteStudent(student.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <StudentTable
+            students={filteredStudents}
+            sortBy={sortBy}
+            isAdmin={isAdmin}
+            onEdit={setEditingStudent}
+            onDelete={handleDeleteStudent}
+          />
         ) : (
-          <table className="table w-full">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Team Name</th>
-                <th>Average Points</th>
-                <th>Members</th>
-                {isAdmin && <th>Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTeams.map((team, index) => (
-                <tr key={team.id}>
-                  <td>{index + 1}</td>
-                  <td>{team.name}</td>
-                  <td>
-                    {team.members
-                      ? (
-                          team.members.reduce((sum, memberName) => {
-                            const member = students.find(
-                              (s) => s.name === memberName,
-                            );
-                            return sum + (member ? member.totalPoints : 0);
-                          }, 0) / team.members.length
-                        ).toFixed(2)
-                      : "N/A"}
-                  </td>
-                  <td>
-                    {team.members ? team.members.join(", ") : "No members"}
-                  </td>
-                  {isAdmin && (
-                    <td>
-                      <button
-                        className="btn btn-xs btn-outline mr-2"
-                        onClick={() => setEditingTeam(team)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-xs btn-error"
-                        onClick={() => handleDeleteTeam(team.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TeamTable
+            teams={filteredTeams}
+            students={students}
+            isAdmin={isAdmin}
+            onEdit={setEditingTeam}
+            onDelete={handleDeleteTeam}
+          />
         )}
       </div>
 
       {isAdmin && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Admin Actions</h2>
-          {activeTab === "students" ? (
-            <form
-              onSubmit={handleAddStudent}
-              className="card bg-base-100 shadow-xl p-4"
-            >
-              <h3 className="text-xl font-semibold mb-2">Add New Student</h3>
-              <input
-                type="text"
-                placeholder="Name"
-                value={newStudent.name}
-                onChange={(e) =>
-                  setNewStudent({ ...newStudent, name: e.target.value })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Student ID"
-                value={newStudent.studentId}
-                onChange={(e) =>
-                  setNewStudent({ ...newStudent, studentId: e.target.value })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <input
-                type="number"
-                placeholder="Community Points"
-                value={newStudent.communityPoints}
-                onChange={(e) =>
-                  setNewStudent({
-                    ...newStudent,
-                    communityPoints: parseInt(e.target.value),
-                  })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <input
-                type="number"
-                placeholder="Project Points"
-                value={newStudent.projectPoints}
-                onChange={(e) =>
-                  setNewStudent({
-                    ...newStudent,
-                    projectPoints: parseInt(e.target.value),
-                  })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <input
-                type="number"
-                placeholder="Graduation Year"
-                value={newStudent.graduationYear}
-                onChange={(e) =>
-                  setNewStudent({
-                    ...newStudent,
-                    graduationYear: e.target.value,
-                  })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Project Groups (comma-separated)"
-                value={newStudent.projectGroups.join(", ")}
-                onChange={(e) =>
-                  setNewStudent({
-                    ...newStudent,
-                    projectGroups: e.target.value.split(", "),
-                  })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <button type="submit" className="btn btn-primary">
-                Add Student
-              </button>
-            </form>
-          ) : (
-            <form
-              onSubmit={handleAddTeam}
-              className="card bg-base-100 shadow-xl p-4"
-            >
-              <h3 className="text-xl font-semibold mb-2">Add New Team</h3>
-              <input
-                type="text"
-                placeholder="Team Name"
-                value={newTeam.name}
-                onChange={(e) =>
-                  setNewTeam({ ...newTeam, name: e.target.value })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <input
-                type="text"
-                placeholder="Members (comma-separated)"
-                value={newTeam.members.join(", ")}
-                onChange={(e) =>
-                  setNewTeam({
-                    ...newTeam,
-                    members: e.target.value.split(", "),
-                  })
-                }
-                className="input input-bordered w-full mb-2"
-              />
-              <button type="submit" className="btn btn-primary">
-                Add Team
-              </button>
-            </form>
-          )}
+        <div className="mt-4">
+          <button className="btn btn-primary w-full mt-2" onClick={handleAddButtonClick}>
+            {showAdminActions
+              ? "Hide Add Form"
+              : `Add ${activeTab === "students" ? "Student" : "Team"}`}
+          </button>
+        </div>
+      )}
+
+      {isAdmin && showAdminActions && (
+        <div ref={adminActionsRef}>
+          <AdminActions
+            activeTab={activeTab}
+            onAddStudent={handleAddStudent}
+            onAddTeam={handleAddTeam}
+            students={students}
+          />
         </div>
       )}
 
       {editingStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Edit Student</h3>
-            <input
-              type="text"
-              value={editingStudent.name}
-              onChange={(e) =>
-                setEditingStudent({ ...editingStudent, name: e.target.value })
-              }
-              className="input input-bordered w-full mb-2"
-            />
-            <input
-              type="number"
-              value={editingStudent.communityPoints}
-              onChange={(e) =>
-                setEditingStudent({
-                  ...editingStudent,
-                  communityPoints: parseInt(e.target.value),
-                })
-              }
-              className="input input-bordered w-full mb-2"
-            />
-            <input
-              type="number"
-              value={editingStudent.projectPoints}
-              onChange={(e) =>
-                setEditingStudent({
-                  ...editingStudent,
-                  projectPoints: parseInt(e.target.value),
-                })
-              }
-              className="input input-bordered w-full mb-2"
-            />
-            <input
-              type="number"
-              value={editingStudent.graduationYear}
-              onChange={(e) =>
-                setEditingStudent({
-                  ...editingStudent,
-                  graduationYear: e.target.value,
-                })
-              }
-              className="input input-bordered w-full mb-2"
-            />
-            <input
-              type="text"
-              value={
-                editingStudent.projectGroups
-                  ? editingStudent.projectGroups.join(", ")
-                  : ""
-              }
-              onChange={(e) =>
-                setEditingStudent({
-                  ...editingStudent,
-                  projectGroups: e.target.value.split(", "),
-                })
-              }
-              className="input input-bordered w-full mb-2"
-              placeholder="Project Groups (comma-separated)"
-            />
-            <div className="flex justify-end">
-              <button
-                onClick={handleUpdateStudent}
-                className="btn btn-primary mr-2"
-              >
-                Save
-              </button>
-              <button onClick={() => setEditingStudent(null)} className="btn">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditStudentModal
+          student={editingStudent}
+          onSave={handleUpdateStudent}
+          onCancel={() => setEditingStudent(null)}
+        />
       )}
 
       {editingTeam && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Edit Team</h3>
-            <input
-              type="text"
-              value={editingTeam.name}
-              onChange={(e) =>
-                setEditingTeam({ ...editingTeam, name: e.target.value })
-              }
-              className="input input-bordered w-full mb-2"
-            />
-            <input
-              type="text"
-              value={editingTeam.members ? editingTeam.members.join(", ") : ""}
-              onChange={(e) =>
-                setEditingTeam({
-                  ...editingTeam,
-                  members: e.target.value.split(", "),
-                })
-              }
-              className="input input-bordered w-full mb-2"
-              placeholder="Members (comma-separated)"
-            />
-            <div className="flex justify-end">
-              <button
-                onClick={handleUpdateTeam}
-                className="btn btn-primary mr-2"
-              >
-                Save
-              </button>
-              <button onClick={() => setEditingTeam(null)} className="btn">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditTeamModal
+          team={editingTeam}
+          students={students}
+          onSave={handleUpdateTeam}
+          onCancel={() => setEditingTeam(null)}
+        />
       )}
     </div>
   );
-}
+};
+
+export default LeaderboardComponent;
