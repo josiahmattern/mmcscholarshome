@@ -282,7 +282,10 @@ const LeaderboardComponent = ({ isAdmin = false }) => {
 
       {isAdmin && (
         <div className="mt-4">
-          <button className="btn btn-primary w-full mt-2" onClick={handleAddButtonClick}>
+          <button
+            className="btn btn-primary w-full mt-2"
+            onClick={handleAddButtonClick}
+          >
             {showAdminActions
               ? "Hide Add Form"
               : `Add ${activeTab === "students" ? "Student" : "Team"}`}
