@@ -43,7 +43,7 @@ export default function Nav() {
 
   return (
     <nav className="w-screen bg-white shadow-sm">
-      <div className="w-full mx-auto px-4 mb-1">
+      <div className="w-full mx-auto px-4 ">
         <div className="flex justify-between h-16">
           <div className=" flex items-center">
             <Link href="/" className="text-3xl font-bold">

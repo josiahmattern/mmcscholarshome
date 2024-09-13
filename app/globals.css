@@ -14,3 +14,15 @@
   font-family: CapitaRegular;
   src: url("/CapitaReg.otf") format("opentype");
 }
+
+.pink {
+  color: #d81a8b;
+}
+.blue {
+  color: #00adee;
+}
+.yellow {
+  color: #efbb34;
+}
+
+

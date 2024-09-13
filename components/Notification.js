@@ -12,7 +12,7 @@ export default function Notification() {
       pauseOnFocusLoss
       draggable
       pauseOnHover
-      theme="dark"
+      theme="light"
       rtl={false}
     />
   );

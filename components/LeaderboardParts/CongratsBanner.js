@@ -13,12 +13,12 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
   }, [topEntity]);
 
   const handleCongratAnimation = () => {
-    var end = Date.now() + 1 * 1000;
-    var colors = ["#bb0000", "#000000"];
+    const end = Date.now() + 1 * 1000;
+    const colors = ["#efbb34", "#00adee", "#d81a8b"]; // Updated to match background animation colors
     
     (function frame() {
       confetti({
-        particleCount: 2,
+        particleCount: 3,
         angle: 65,
         spread: 75,
         origin: { x: 0, y: 0.4 },
@@ -26,7 +26,7 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
         colors: colors,
       });
       confetti({
-        particleCount: 2,
+        particleCount: 3,
         angle: 115,
         spread: 75,
         origin: { x: 1, y: 0.4 },
@@ -55,8 +55,8 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
         <h1 ref={confettiRef} className="text-2xl md:text-3xl inline-block">
           Congratulations
         </h1>
-        <span className="text-red-500 text-2xl md:text-3xl mt-2">{topEntity.name}!</span>
-        <p className="text-sm md:text-base mt-2">{congratsMessage}</p>
+        <span className="blue text-2xl md:text-3xl mt-2">{topEntity.name}!</span>
+        <p className="text-sm md:text-base mt-2 ">{congratsMessage}</p>
       </div>
     </div>
   );

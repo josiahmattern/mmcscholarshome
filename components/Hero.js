@@ -1,14 +1,25 @@
 import Nav from "@/components/Nav";
 import Image from "next/image";
+import BackgroundAnimation from "@/components/BackgroundAnimation";
 
 export default function Hero() {
   return (
-    <main className="flex flex-col h-screen">
-      <Nav />
-      <div className="flex-grow bg-[url('/splatters.png')] bg-cover flex flex-col justify-center items-center relative">
-        <div className="hero-content text-center rounded-md bg-gray-300 bg-opacity-70">
+    <main className="relative flex flex-col h-screen overflow-hidden">
+      {/* Navbar with higher z-index to keep it on top */}
+      <div className="relative z-20">
+        <Nav />
+      </div>
+
+      {/* Background Animation */}
+      <div className="absolute inset-0 z-0">
+        <BackgroundAnimation />
+      </div>
+
+      {/* Hero Content */}
+      <div className="relative flex-grow flex flex-col justify-center items-center z-10">
+        <div className="hero-content text-center rounded-md bg-gray-300 bg-opacity-0 p-6">
           <div className="max-w-lg">
-            <h1 className="text-5xl font-bold">Welcome to the</h1>
+            <h1 className="text-5xl font-bold mb-6">Welcome to the</h1>
             <Image
               src="/MMCScholars.png"
               alt="MMC Logo"
@@ -18,7 +29,9 @@ export default function Hero() {
             />
           </div>
         </div>
-        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-center">
+
+        {/* Scroll Down Indicator */}
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-center z-20">
           <p className="text-md mb-4">Scroll down to view schedule</p>
           <div className="animate-bounce">
             <svg
