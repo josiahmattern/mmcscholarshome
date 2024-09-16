@@ -77,6 +77,9 @@ export default function Nav() {
             >
               Projects
             </Link>
+            <Link className="mr-6 font-bold hover:text-gray-700" href="/teams">
+             Our Teams
+            </Link>
             {user ? (
               <button
                 className="btn hover:bg-gray-200"
@@ -127,6 +130,12 @@ export default function Nav() {
             href="/projects"
           >
             Projects
+          </Link>
+          <Link
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            href="/teams"
+          >
+           Our Teams 
           </Link>
           {user ? (
             <button

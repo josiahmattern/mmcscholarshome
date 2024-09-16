@@ -212,6 +212,7 @@ export default function Schedule({ isAdmin = false }) {
           </div>
         ))}
       </div>
+      {/* Only show the form to add new classes if the user is an admin */}
       {isAdmin && (
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
