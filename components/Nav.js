@@ -42,7 +42,7 @@ export default function Nav() {
   };
 
   return (
-    <nav className="w-screen bg-white shadow-sm">
+    <nav className="bg-white shadow-sm">
       <div className="w-full mx-auto px-4 ">
         <div className="flex justify-between h-16">
           <div className=" flex items-center">
@@ -79,13 +79,13 @@ export default function Nav() {
             </Link>
             {user ? (
               <button
-                className="btn mr-1 hover:bg-gray-200"
+                className="btn hover:bg-gray-200"
                 onClick={handleLogout}
               >
                 Logout
               </button>
             ) : (
-              <Link className="btn mr-1 hover:bg-gray-200" href="/login">
+              <Link className="btn hover:bg-gray-200" href="/login">
                 Login
               </Link>
             )}
