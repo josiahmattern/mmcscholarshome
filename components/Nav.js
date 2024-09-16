@@ -42,7 +42,7 @@ export default function Nav() {
   };
 
   return (
-    <nav className="w-screen bg-white shadow-sm">
+    <nav className="bg-white shadow-sm">
       <div className="w-full mx-auto px-4 ">
         <div className="flex justify-between h-16">
           <div className=" flex items-center">
@@ -76,6 +76,9 @@ export default function Nav() {
               href="/projects"
             >
               Projects
+            </Link>
+            <Link className="mr-6 font-bold hover:text-gray-700" href="/teams">
+             Our Teams
             </Link>
             {user ? (
               <button
@@ -127,6 +130,12 @@ export default function Nav() {
             href="/projects"
           >
             Projects
+          </Link>
+          <Link
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            href="/teams"
+          >
+           Our Teams 
           </Link>
           {user ? (
             <button
