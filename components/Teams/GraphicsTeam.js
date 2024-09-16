@@ -1,3 +1,4 @@
+import Image from 'next/image';
 
 export default function GraphicsTeam() {
   return (
@@ -12,6 +13,15 @@ export default function GraphicsTeam() {
           techniques (e.g., motion graphics, infographics, design for social media).
         </p>
       </div>
+      <div className="card w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 justify-center">
+          <Image src="/graphicsTeam/MMCMorrill.jpg" width={300} height={387} alt="Graphics Team" />
+          <Image src="/graphicsTeam/morrillbear.png" width={400} height={387} alt="Graphics Team" />
+          <Image src="/graphicsTeam/MMCPowerStrip.png" width={600} height={387} alt="Graphics Team" />
+        </div>
+      </div>
+
+
     </main>
   );
 }
