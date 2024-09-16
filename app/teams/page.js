@@ -5,6 +5,7 @@ import DataTeam from "@/components/Teams/DataTeam";
 import VideoTeam from "@/components/Teams/VideoTeam";
 import GraphicsTeam from "@/components/Teams/GraphicsTeam";
 import MotionGraphicsTeam from "@/components/Teams/MotionGraphicsTeam";
+import VRTeam from "@/components/Teams/VRTeam";
 import { useState } from "react";
 
 export default function Teams() {
@@ -32,6 +33,14 @@ export default function Teams() {
             }}
           >
             Data
+          </a>
+          <a
+            className={`tab ${activeTab === "VR" ? "tab-active" : ""} w-full text-center`}
+            onClick={() => {
+              setActiveTab("VR");
+            }}
+          >
+            VR
           </a>
           <a
             className={`tab ${activeTab === "video" ? "tab-active" : ""} w-full  text-center`}
@@ -63,6 +72,7 @@ export default function Teams() {
         <div>{activeTab === "video" && <VideoTeam />}</div>
         <div>{activeTab === "graphics" && <GraphicsTeam />}</div>
         <div>{activeTab === "motiongraphics" && <MotionGraphicsTeam />}</div>
+        <div>{activeTab === "VR" && <VRTeam />}</div>
       </div>
     </main>
   );

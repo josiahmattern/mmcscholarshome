@@ -10,6 +10,7 @@ export default function WebDevTeam() {
           and Python.
         </p>
       </div>
+      <embed src="http://localhost:3000/" className="w-full" />
     </main>
   );
 }
