@@ -16,7 +16,7 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
       <thead>
         <tr>
           <th>Rank</th>
-          <th>Image</th>
+          <th className="hidden md:table-cell">Image</th> {/* Hidden on small screens */}
           <th>Team Name</th>
           <th>Average Points</th>
           <th>Members</th>
@@ -27,7 +27,7 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
         {teams.map((team, index) => (
           <tr key={team.id}>
             <td>{index + 1}</td>
-            <td>
+            <td className="hidden md:table-cell"> {/* Hidden on small screens */}
               <div className="avatar">
                 <div className="mask mask-squircle w-12 h-12">
                   {team.imageUrl ? (
