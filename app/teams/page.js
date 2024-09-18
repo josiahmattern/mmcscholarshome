@@ -14,7 +14,11 @@ const tabs = [
   { key: "VR", label: "VR", component: VRTeam },
   { key: "video", label: "Video", component: VideoTeam },
   { key: "graphics", label: "Graphics", component: GraphicsTeam },
-  { key: "motiongraphics", label: "Motion Graphics", component: MotionGraphicsTeam },
+  {
+    key: "motiongraphics",
+    label: "Motion Graphics",
+    component: MotionGraphicsTeam,
+  },
 ];
 
 export default function Teams() {
@@ -27,13 +31,11 @@ export default function Teams() {
       <div className="p-4">
         <h1 className="text-4xl font-bold text-center mb-8">Teams</h1>
 
-        <div className="tabs tabs-boxed mb-8 flex flex-wrap justify-center">
+        <div className="tabs tabs-boxed mb-8 flex max-w-3xl flex-wrap mx-auto justify-center md:justify-between">
           {tabs.map((tab) => (
             <button
               key={tab.key}
-              className={`tab ${
-                activeTab === tab.key ? "tab-active" : ""
-              } m-2`}
+              className={`tab ${activeTab === tab.key ? "tab-active" : ""} m-2`}
               onClick={() => setActiveTab(tab.key)}
             >
               {tab.label}
@@ -41,7 +43,7 @@ export default function Teams() {
           ))}
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-screen">
           {ActiveComponent && <ActiveComponent />}
         </div>
       </div>
