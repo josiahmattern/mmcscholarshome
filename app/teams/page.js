@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Nav from "@/components/Nav";
 import WebDevTeam from "@/components/Teams/WebDevTeam";
 import DataTeam from "@/components/Teams/DataTeam";
@@ -6,73 +7,43 @@ import VideoTeam from "@/components/Teams/VideoTeam";
 import GraphicsTeam from "@/components/Teams/GraphicsTeam";
 import MotionGraphicsTeam from "@/components/Teams/MotionGraphicsTeam";
 import VRTeam from "@/components/Teams/VRTeam";
-import { useState } from "react";
+
+const tabs = [
+  { key: "webdev", label: "Web Dev", component: WebDevTeam },
+  { key: "data", label: "Data", component: DataTeam },
+  { key: "VR", label: "VR", component: VRTeam },
+  { key: "video", label: "Video", component: VideoTeam },
+  { key: "graphics", label: "Graphics", component: GraphicsTeam },
+  { key: "motiongraphics", label: "Motion Graphics", component: MotionGraphicsTeam },
+];
 
 export default function Teams() {
   const [activeTab, setActiveTab] = useState("webdev");
+  const ActiveComponent = tabs.find((tab) => tab.key === activeTab)?.component;
 
   return (
     <main>
       <Nav />
       <div className="p-4">
-        <h1 className="text-4xl font-bold text-center mb-4">Teams</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">Teams</h1>
 
-        <div className="tabs tabs-boxed mb-4 flex flex-col w-full md:flex-row md:justify-around">
-          <a
-            className={`tab ${activeTab === "webdev" ? "tab-active" : ""} w-full text-center`}
-            onClick={() => {
-              setActiveTab("webdev");
-            }}
-          >
-            Web Dev
-          </a>
-          <a
-            className={`tab ${activeTab === "data" ? "tab-active" : ""} w-full text-center`}
-            onClick={() => {
-              setActiveTab("data");
-            }}
-          >
-            Data
-          </a>
-          <a
-            className={`tab ${activeTab === "VR" ? "tab-active" : ""} w-full text-center`}
-            onClick={() => {
-              setActiveTab("VR");
-            }}
-          >
-            VR
-          </a>
-          <a
-            className={`tab ${activeTab === "video" ? "tab-active" : ""} w-full  text-center`}
-            onClick={() => {
-              setActiveTab("video");
-            }}
-          >
-            Video
-          </a>
-          <a
-            className={`tab ${activeTab === "graphics" ? "tab-active" : ""} w-full  text-center`}
-            onClick={() => {
-              setActiveTab("graphics");
-            }}
-          >
-            Graphics
-          </a>
-          <a
-            className={`tab ${activeTab === "motiongraphics" ? "tab-active" : ""} w-full text-center`}
-            onClick={() => {
-              setActiveTab("motiongraphics");
-            }}
-          >
-            Motion Graphics
-          </a>
+        <div className="tabs tabs-boxed mb-8 flex flex-wrap justify-center">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              className={`tab ${
+                activeTab === tab.key ? "tab-active" : ""
+              } m-2`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-        <div>{activeTab === "webdev" && <WebDevTeam />}</div>
-        <div>{activeTab === "data" && <DataTeam />}</div>
-        <div>{activeTab === "video" && <VideoTeam />}</div>
-        <div>{activeTab === "graphics" && <GraphicsTeam />}</div>
-        <div>{activeTab === "motiongraphics" && <MotionGraphicsTeam />}</div>
-        <div>{activeTab === "VR" && <VRTeam />}</div>
+
+        <div className="max-w-4xl mx-auto">
+          {ActiveComponent && <ActiveComponent />}
+        </div>
       </div>
     </main>
   );
