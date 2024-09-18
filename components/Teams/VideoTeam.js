@@ -1,6 +1,6 @@
 export default function VideoTeam() {
   return (
-    <main>
+    <main className="container mx-auto px-4">
       <div className="w-full text">
         <p className="text-lg">
           The MMC Digital Lab Video Team creates promotional video content for

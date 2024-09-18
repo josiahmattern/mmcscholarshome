@@ -1,6 +1,6 @@
 export default function MotionGraphicsTeam() {
   return (
-    <main>
+    <main className="container mx-auto px-4">
       <div className="w-full text">
         <p className="text-lg">
           The MMC Digital Lab Motion Graphics Team designs animated graphics to

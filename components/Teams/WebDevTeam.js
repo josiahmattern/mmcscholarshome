@@ -1,6 +1,6 @@
 export default function WebDevTeam() {
   return (
-    <main>
+    <main className="container mx-auto px-4">
       <div className="w-full text">
         <p className="text-lg">
           The MMC Digital Lab Web Dev Team develops websites and materials for
