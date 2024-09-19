@@ -1,9 +1,12 @@
 import Image from "next/image";
+import Nav from "@/components/Nav";
 
 export default function GraphicsTeam() {
   return (
-    <main className="container mx-auto w-full border">
-      <div className="w-full text-center mb-8">
+    <main>
+      <Nav />
+      <h1 className="text-4xl font-bold text-center my-8">Graphics Team</h1>
+      <div className="w-full text-center mb-8 px-8">
         <p className="text-lg leading-relaxed text-gray-700">
           The MMC Digital Lab Graphics Team creates digital and physical media
           for the MMC Digital Lab and MMC Scholars program. Student employees
@@ -18,7 +21,7 @@ export default function GraphicsTeam() {
         </p>
       </div>
 
-      <div className="w-full max-w-lg md:max-w-2xl mx-auto pb-8 ">
+      <div className="w-full max-w-lg md:max-w-2xl mx-auto pb-8 px-8 ">
         <div className="flex flex-col md:flex-row">
           <div className="flex-grow-1 md:mr-6 mb-6 md:mb-0 card bg-white shadow-md rounded-md flex justify-center items-center">
             <Image

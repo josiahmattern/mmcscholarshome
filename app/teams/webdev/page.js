@@ -1,8 +1,12 @@
+import Nav from "@/components/Nav";
+
 export default function WebDevTeam() {
   return (
-    <main className="container mx-auto px-4">
+    <main className="">
+      <Nav />
+      <h1 className="text-4xl font-bold text-center my-8">Web Dev Team</h1>
       <div className="w-full text">
-        <p className="text-lg">
+        <p className="text-lg px-8">
           The MMC Digital Lab Web Dev Team develops websites and materials for
           the MMC Digital Lab and the MMC Scholars program. Student employees
           are trained in many coding frameworks, including JavaScript, HTML/CSS,

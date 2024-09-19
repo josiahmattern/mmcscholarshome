@@ -1,8 +1,16 @@
+import Nav from "@/components/Nav";
+import YoutubeVideo from "@/components/YoutubeVideo";
+
 export default function MotionGraphicsTeam() {
+  const videos = ["sDbsSd3lwgc", "5hGkQOu5XTM", "XYE3gUovefU"];
+
+
   return (
-    <main className="container mx-auto px-4">
+    <main>
+      <Nav />
+      <h1 className="text-4xl font-bold text-center my-8">Motion Graphics Team</h1>
       <div className="w-full text">
-        <p className="text-lg">
+        <p className="text-lg xl:text-xl px-8 mb-4">
           The MMC Digital Lab Motion Graphics Team designs animated graphics to
           be used in videos for the MMC Digital Lab, MMC Scholars program, and
           the Honors & Scholars Center. Motion Graphics team members are
@@ -14,6 +22,13 @@ export default function MotionGraphicsTeam() {
           with the Ohio State Digital Asset Management system, multiple audio
           formats (background music and voiceovers), and more.
         </p>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 items-center">
+        {videos.map((embedCode, index) => (
+          <div key={index} className="p-4">
+            <YoutubeVideo key={index} embedCode={embedCode} />
+          </div>
+        ))}
       </div>
     </main>
   );

@@ -1,8 +1,15 @@
+import YoutubeVideo from "@/components/YoutubeVideo";
+import Nav from "@/components/Nav";
+
 export default function VideoTeam() {
+  const videos = ["eIAvEUFGnzI", "uw2Pfq3ryOs", "DH068Nm0bVM"];
+
   return (
-    <main className="container mx-auto px-4">
-      <div className="w-full text">
-        <p className="text-lg">
+    <main>
+      <Nav />
+      <h1 className="text-4xl font-bold text-center my-8">Video Team</h1>
+      <div className="w-full text px-8">
+        <p className="text-lg xl:text-xl mb-8 leading-relaxed text-gray-700">
           The MMC Digital Lab Video Team creates promotional video content for
           MMC Scholars, the Honors & Scholars Center, and other organizations
           within the Office of Academic Enrichment. Student employees are
@@ -13,6 +20,13 @@ export default function VideoTeam() {
           to explore their interests and learn additional Video-related
           software, such as Adobe After Effects and Adobe Audition.
         </p>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 items-center">
+        {videos.map((embedCode, index) => (
+          <div key={index} className="p-4">
+            <YoutubeVideo key={index} embedCode={embedCode} />
+          </div>
+        ))}
       </div>
     </main>
   );
