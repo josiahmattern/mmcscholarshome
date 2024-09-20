@@ -4,11 +4,12 @@ import YoutubeVideo from "@/components/YoutubeVideo";
 export default function MotionGraphicsTeam() {
   const videos = ["sDbsSd3lwgc", "5hGkQOu5XTM", "XYE3gUovefU"];
 
-
   return (
     <main>
       <Nav />
-      <h1 className="text-4xl font-bold text-center my-8">Motion Graphics Team</h1>
+      <h1 className="text-4xl font-bold text-center my-8">
+        Motion Graphics Team
+      </h1>
       <div className="w-full text">
         <p className="text-lg xl:text-xl px-8 mb-4">
           The MMC Digital Lab Motion Graphics Team designs animated graphics to
@@ -23,9 +24,9 @@ export default function MotionGraphicsTeam() {
           formats (background music and voiceovers), and more.
         </p>
       </div>
-      <div className="grid grid-cols-1 xl:grid-cols-3 items-center">
+      <div className="grid grid-cols-1 items-center">
         {videos.map((embedCode, index) => (
-          <div key={index} className="p-4">
+          <div key={index} className="px-4 py-2">
             <YoutubeVideo key={index} embedCode={embedCode} />
           </div>
         ))}

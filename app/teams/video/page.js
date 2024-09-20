@@ -21,9 +21,9 @@ export default function VideoTeam() {
           software, such as Adobe After Effects and Adobe Audition.
         </p>
       </div>
-      <div className="grid grid-cols-1 xl:grid-cols-3 items-center">
+      <div className="grid grid-cols-1 items-center">
         {videos.map((embedCode, index) => (
-          <div key={index} className="p-4">
+          <div key={index} className="px-4 py-2">
             <YoutubeVideo key={index} embedCode={embedCode} />
           </div>
         ))}
