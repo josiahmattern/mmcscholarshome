@@ -15,7 +15,7 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
   const handleCongratAnimation = () => {
     const end = Date.now() + 1 * 1000;
     const colors = ["#efbb34", "#00adee", "#d81a8b"]; // Updated to match background animation colors
-    
+
     (function frame() {
       confetti({
         particleCount: 3,
@@ -33,7 +33,7 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
         ticks: 40,
         colors: colors,
       });
-      
+
       if (Date.now() < end) {
         requestAnimationFrame(frame);
       }
@@ -50,7 +50,7 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
   }
 
   return (
-    <div className="mt-2 p-8 bg-neutral-100 rounded-lg shadow-md mb-8">
+    <div className="mt-2 p-8 bg-neutral rounded-lg shadow-md mb-8">
       <div className="flex flex-col items-center">
         <h1 ref={confettiRef} className="text-2xl md:text-3xl inline-block">
           Congratulations

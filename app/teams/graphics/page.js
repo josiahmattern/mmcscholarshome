@@ -7,7 +7,7 @@ export default function GraphicsTeam() {
       <Nav />
       <h1 className="text-4xl font-bold text-center my-8">Graphics Team</h1>
       <div className="w-full text-center mb-8 px-8">
-        <p className="text-lg leading-relaxed text-gray-700">
+        <p className="text-lg leading-relaxed">
           The MMC Digital Lab Graphics Team creates digital and physical media
           for the MMC Digital Lab and MMC Scholars program. Student employees
           are trained in multiple programs within the Adobe Suite, including

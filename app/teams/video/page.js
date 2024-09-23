@@ -9,7 +9,7 @@ export default function VideoTeam() {
       <Nav />
       <h1 className="text-4xl font-bold text-center my-8">Video Team</h1>
       <div className="w-full text px-8">
-        <p className="text-lg xl:text-xl mb-8 leading-relaxed text-gray-700">
+        <p className="text-lg xl:text-xl mb-8 leading-relaxed">
           The MMC Digital Lab Video Team creates promotional video content for
           MMC Scholars, the Honors & Scholars Center, and other organizations
           within the Office of Academic Enrichment. Student employees are

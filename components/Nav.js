@@ -7,6 +7,7 @@ import { ref, get } from "firebase/database";
 import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { auth, db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
+import ThemeSwitcher from "./ThemeSwitcher";
 
 export default function Nav() {
   const [user, setUser] = useState(null);
@@ -76,7 +77,7 @@ export default function Nav() {
   }, [isTeamsDropdownOpen]);
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-base-200 shadow-sm">
       <div className="w-full mx-auto px-4 ">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -89,6 +90,7 @@ export default function Nav() {
                 className="mt-1"
               />
             </Link>
+            <ThemeSwitcher />
           </div>
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center">
@@ -163,11 +165,11 @@ export default function Nav() {
               )}
             </div>
             {user ? (
-              <button className="btn hover:bg-gray-200" onClick={handleLogout}>
+              <button className="btn btn-neutral" onClick={handleLogout}>
                 Logout
               </button>
             ) : (
-              <Link className="btn hover:bg-gray-200" href="/login">
+              <Link className="btn btn-neutral" href="/login">
                 Login
               </Link>
             )}

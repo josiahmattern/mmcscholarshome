@@ -19,7 +19,7 @@ export default function Hero() {
       <div className="relative flex-grow flex flex-col justify-center items-center z-10">
         <div className="hero-content text-center rounded-md bg-gray-300 bg-opacity-0 p-6">
           <div className="max-w-lg">
-            <h1 className="text-5xl font-bold mb-6">Welcome to the</h1>
+            <h1 className="text-5xl font-bold mb-6">Welcome to</h1>
             <Image
               src="/MMCScholars.png"
               alt="MMC Logo"
