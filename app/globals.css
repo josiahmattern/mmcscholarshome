@@ -18,11 +18,36 @@
 .pink {
   color: #d81a8b;
 }
+
 .blue {
   color: #00adee;
 }
+
 .yellow {
   color: #efbb34;
 }
 
+.pink-btn {
+  background: #d81a8b;
+  color: white;
+}
 
+.blue-btn {
+  background: #00adee;
+  color: white;
+}
+
+.blue-btn {
+  background: #00adee;
+  color: theme("colors.base-100");
+}
+
+.blue-btn:hover {
+  background: theme("colors.sky.400");
+  border: 1px solid theme("colors.sky.400");
+}
+
+.yellow-btn {
+  background: #efbb34;
+  color: white;
+}

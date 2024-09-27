@@ -50,7 +50,7 @@ const CongratulationsBanner = ({ topEntity, entityType, filterInfo }) => {
   }
 
   return (
-    <div className="mt-2 p-8 bg-neutral rounded-lg shadow-md mb-8">
+    <div className="mt-2 p-8 bg-base-200 rounded-lg shadow-md mb-8">
       <div className="flex flex-col items-center">
         <h1 ref={confettiRef} className="text-2xl md:text-3xl inline-block">
           Congratulations
