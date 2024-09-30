@@ -16,6 +16,9 @@ export default function WebDevTeam() {
           skillsets by training in other development software such as Blender,
           Unity, and Python.
         </p>
+        <div className="text-3xl font-bold text-center my-8">
+          Check out our projects below!
+        </div>
       </div>
     </main>
   );

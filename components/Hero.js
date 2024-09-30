@@ -1,8 +1,22 @@
+"use client";
+import { useState, useEffect } from "react";
 import Nav from "@/components/Nav";
 import Image from "next/image";
 import BackgroundAnimation from "@/components/BackgroundAnimation";
 
 export default function Hero() {
+  const LIGHT = "cmyk";
+  const DARK = "darkcmyk";
+  
+  // State to manage the theme
+  const [theme, setTheme] = useState(LIGHT);
+
+  // useEffect to handle localStorage access on the client side
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || LIGHT;
+    setTheme(savedTheme);
+  }, []); // Empty dependency array ensures this runs once after the component mounts
+
   return (
     <main className="relative flex flex-col h-screen overflow-hidden">
       {/* Navbar with higher z-index to keep it on top */}
@@ -12,7 +26,7 @@ export default function Hero() {
 
       {/* Background Animation */}
       <div className="absolute inset-0 z-0">
-        <BackgroundAnimation />
+        <BackgroundAnimation theme={theme} />
       </div>
 
       {/* Hero Content */}

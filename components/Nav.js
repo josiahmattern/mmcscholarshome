@@ -103,7 +103,7 @@ export default function Nav() {
             )}
             <div className="px-2 py-1 hover:bg-base-200 rounded-lg">
               <Link
-                className="font-bold text-bg-base-200 hover:text-bg-base-300"
+                className="font-bold text-bg-base-200 hover:text-bg-base-200"
                 href="/leaderboard"
               >
                 Leaderboard
@@ -111,7 +111,7 @@ export default function Nav() {
             </div>
             <div className="px-2 py-1 hover:bg-base-200 rounded-lg">
               <Link
-                className="font-bold text-bg-base-200 hover:text-bg-base-300"
+                className="font-bold text-bg-base-200 hover:text-bg-base-200"
                 href="/projects"
               >
                 Projects
@@ -211,13 +211,13 @@ export default function Nav() {
             </Link>
           )}
           <Link
-            className="block px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-300 hover:bg-base-200"
+            className="block px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
             href="/leaderboard"
           >
             Leaderboard
           </Link>
           <Link
-            className="block px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-300 hover:bg-base-200"
+            className="block px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
             href="/projects"
           >
             Projects
@@ -225,7 +225,7 @@ export default function Nav() {
           {/* Our Teams Mobile Dropdown */}
           <div className="block">
             <button
-              className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-300 hover:bg-base-200 inline-flex items-center"
+              className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 inline-flex items-center"
               onClick={toggleMobileTeamsDropdown}
             >
               Our Teams
@@ -235,37 +235,37 @@ export default function Nav() {
               <div className="ml-4 mt-1 space-y-1">
                 <Link
                   href="/teams/webdev"
-                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300 rounded-md"
+                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 rounded-md"
                 >
                   Web Dev
                 </Link>
                 <Link
                   href="/teams/data"
-                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300 rounded-md"
+                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 rounded-md"
                 >
                   Data
                 </Link>
                 <Link
                   href="/teams/vr"
-                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300 rounded-md"
+                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 rounded-md"
                 >
                   VR
                 </Link>
                 <Link
                   href="/teams/video"
-                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300 rounded-md"
+                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 rounded-md"
                 >
                   Video
                 </Link>
                 <Link
                   href="/teams/graphics"
-                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300 rounded-md"
+                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 rounded-md"
                 >
                   Graphics
                 </Link>
                 <Link
                   href="/teams/motiongraphics"
-                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300 rounded-md"
+                  className="block px-3 py-2 text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 rounded-md"
                 >
                   Motion Graphics
                 </Link>
@@ -273,20 +273,20 @@ export default function Nav() {
             )}
           </div>
           {/* Auth Buttons */}
-          <div className="flex w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300">
+          <div className="flex w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200">
             <div>Change Theme:</div>
             <ThemeSwitcher />
           </div>
           {user ? (
             <button
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300"
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
               onClick={handleLogout}
             >
               Logout
             </button>
           ) : (
             <Link
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-300 hover:bg-base-300"
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
               href="/login"
             >
               Login

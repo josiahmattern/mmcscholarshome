@@ -17,6 +17,24 @@ module.exports = {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["dim", "light", "cmyk"],
+    themes: [
+      {
+        darkcmyk: {
+          primary: "#00adee",
+          secondary: "#efbb34",
+          accent: "#d81a8b",
+          neutral: "#3d4451",
+          "base-100": "#353B47",
+          "base-content": "#E2E5EB",
+        },
+        cmyk: {
+          primary: "#00adee",
+          secondary: "#efbb34",
+          accent: "#d81a8b",
+          neutral: "#3d4451",
+          "base-100": "#ffffff",
+        },
+      },
+    ],
   },
 };

@@ -5,9 +5,9 @@ export default function ProjectCard(props) {
     <div className="flex justify-center w-full">
       <div className="card bg-base-100 shadow-md h-60 max-w-lg w-full">
         <div className="card-body flex flex-col h-full">
-          <h2 className="card-title text-2xl blue mb-2">
+          <h2 className="card-title text-2xl text-primary mb-2">
             <Link
-              className="hover:text-sky-600"
+              className="hover:text-sky-300"
               href={props.link}
               target="_blank"
               rel="noopener noreferrer"

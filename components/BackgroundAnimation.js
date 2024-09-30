@@ -2,7 +2,16 @@
 import { motion } from "framer-motion";
 import React from "react";
 
-const BackgroundAnimation = () => {
+const BackgroundAnimation = ({ theme }) => {
+  // Light and dark theme colors
+  const isDarkTheme = theme === "dark";
+
+  const colors = {
+    yellow: isDarkTheme ? "#ffe066" : "#efbb34",
+    blue: isDarkTheme ? "#4f8bc9" : "#00adee",
+    pink: isDarkTheme ? "#ff5fba" : "#d81a8b",
+  };
+
   return (
     <div
       style={{
@@ -18,7 +27,7 @@ const BackgroundAnimation = () => {
         animate={{ opacity: [0.2, 0.4], scale: [1, 1.5] }}
         transition={{ duration: 10, repeat: Infinity, repeatType: "mirror" }}
         style={{
-          backgroundColor: "#efbb34",
+          backgroundColor: colors.yellow,
           position: "absolute",
           width: "200%",
           height: "200%",
@@ -40,7 +49,7 @@ const BackgroundAnimation = () => {
           repeatType: "mirror",
         }}
         style={{
-          backgroundColor: "#00adee",
+          backgroundColor: colors.blue,
           position: "absolute",
           width: "90vw",
           height: "50vh",
@@ -60,7 +69,7 @@ const BackgroundAnimation = () => {
           repeatType: "mirror",
         }}
         style={{
-          backgroundColor: "#d81a8b",
+          backgroundColor: colors.pink,
           position: "absolute",
           width: "90vw",
           height: "50vh",

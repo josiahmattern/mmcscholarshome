@@ -209,10 +209,10 @@ export default function Admin() {
   return (
     <main>
       <Nav />
-      <div className="w-full bg-neutral-200 p-4">
+      <div className="w-full bg-base-200 p-4">
         <div className="container mx-auto flex flex-col items-center">
           <h1 className="text-3xl font-bold mb-4 mt-4">Admin</h1>
-          <div className="tabs bg-neutral-100 tabs-boxed mb-4">
+          <div className="tabs bg-base-100 tabs-boxed mb-4">
             <a
               className={`tab ${activeTab === "schedule" ? "tab-active" : ""}`}
               onClick={() => setActiveTab("schedule")}
@@ -226,6 +226,8 @@ export default function Admin() {
               Leaderboard
             </a>
           </div>
+          {/* Export and import buttons 
+
           <button onClick={exportToCSV} className="btn btn-primary mb-4">
             Export All Data to CSV
           </button>
@@ -235,6 +237,10 @@ export default function Admin() {
             onChange={importFromCSV}
             className="btn btn-secondary mb-4"
           />
+          */}
+          <button onClick={exportToCSV} className="btn btn-primary mb-4">
+            Export All Data to CSV
+          </button>
         </div>
       </div>
       <div className="p-4">

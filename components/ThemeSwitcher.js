@@ -3,7 +3,7 @@ import { themeChange } from "theme-change";
 
 const ThemeSwitcher = () => {
   const LIGHT = "cmyk";
-  const DARK = "dim";
+  const DARK = "darkcmyk";
   const [theme, setTheme] = useState(LIGHT);
 
   useEffect(() => {
