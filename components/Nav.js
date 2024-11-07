@@ -117,7 +117,7 @@ export default function Nav() {
                 Projects
               </Link>
             </div>
-            {/* Our Teams Dropdown */}
+            {/* Our Teams Dropdown 
             <div
               className="relative px-2 py-1 hover:bg-base-200 rounded-lg"
               ref={teamsDropdownRef}
@@ -170,6 +170,7 @@ export default function Nav() {
                 </div>
               )}
             </div>
+            */}
             {/* Theme Switcher */}
             <ThemeSwitcher />
             {/* Auth Buttons */}
@@ -222,7 +223,7 @@ export default function Nav() {
           >
             Projects
           </Link>
-          {/* Our Teams Mobile Dropdown */}
+          {/* Our Teams Mobile Dropdown 
           <div className="block">
             <button
               className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200 inline-flex items-center"
@@ -272,6 +273,7 @@ export default function Nav() {
               </div>
             )}
           </div>
+          */}
           {/* Auth Buttons */}
           <div className="flex w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200">
             <div>Change Theme:</div>
