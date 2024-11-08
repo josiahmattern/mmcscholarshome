@@ -16,7 +16,8 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
       <thead>
         <tr>
           <th>Rank</th>
-          <th className="hidden md:table-cell">Image</th> {/* Hidden on small screens */}
+          <th className="hidden md:table-cell">Image</th>{" "}
+          {/* Hidden on small screens */}
           <th>Team Name</th>
           <th>Average Points</th>
           <th>Members</th>
@@ -27,19 +28,28 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
         {teams.map((team, index) => (
           <tr key={team.id}>
             <td>{index + 1}</td>
-            <td className="hidden md:table-cell"> {/* Hidden on small screens */}
+            <td className="hidden md:table-cell">
+              {" "}
+              {/* Hidden on small screens */}
               <div className="avatar">
-                <div className="mask mask-squircle w-12 h-12">
+                <div className="mask mask-circle w-14 h-14 overflow-hidden">
                   {team.imageUrl ? (
-                    <Image 
-                      width={48}
-                      height={48}
-                      src={team.imageUrl} 
-                      alt={team.name} 
+                    <Image
+                      className="object-cover w-full h-full"
+                      width={256}
+                      height={256}
+                      src={team.imageUrl}
+                      alt={team.name}
                     />
                   ) : (
-                    <div className="bg-gray-200 w-full h-full flex items-center justify-center text-gray-500">
-                      No Image
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Image
+                        className="object-cover w-full h-full"
+                        width={256}
+                        height={256}
+                        src="/MMCLOGO.png"
+                        alt={team.name}
+                      />
                     </div>
                   )}
                 </div>
@@ -49,9 +59,7 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
               <div className="font-bold">{team.name}</div>
             </td>
             <td>{calculateAveragePoints(team)}</td>
-            <td>
-              {team.members ? team.members.join(", ") : "No members"}
-            </td>
+            <td>{team.members ? team.members.join(", ") : "No members"}</td>
             {isAdmin && (
               <td>
                 <button

@@ -95,23 +95,26 @@ export default function Nav() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center">
             {isAdmin && (
-              <div className="px-2 py-1 hover:bg-base-200 rounded-lg">
-                <Link className="font-bold text-red-600" href="/admin">
+              <div className="px-2 py-1 rounded-lg">
+                <Link
+                  className="font-bold hover:text-red-700 text-red-500"
+                  href="/admin"
+                >
                   Admin
                 </Link>
               </div>
             )}
-            <div className="px-2 py-1 hover:bg-base-200 rounded-lg">
+            <div className="px-2 py-1 rounded-lg">
               <Link
-                className="font-bold text-bg-base-200 hover:text-bg-base-200"
+                className="font-bold text-bg-base-200 hover:text-zinc-500"
                 href="/leaderboard"
               >
                 Leaderboard
               </Link>
             </div>
-            <div className="px-2 py-1 hover:bg-base-200 rounded-lg">
+            <div className="px-2 py-1 rounded-lg">
               <Link
-                className="font-bold text-bg-base-200 hover:text-bg-base-200"
+                className="font-bold text-bg-base-200 hover:text-zinc-500"
                 href="/projects"
               >
                 Projects
@@ -275,10 +278,10 @@ export default function Nav() {
           </div>
           */}
           {/* Auth Buttons */}
-          <div className="flex w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200">
-            <div>Change Theme:</div>
-            {/*<ThemeSwitcher />*/}
-          </div>
+          {/*<div className="flex w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200">
+             <div>Change Theme:</div>
+            <ThemeSwitcher />
+          </div>*/}
           {user ? (
             <button
               className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
