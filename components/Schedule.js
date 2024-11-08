@@ -118,99 +118,105 @@ export default function Schedule({ isAdmin = false }) {
   return (
     <div className="container mx-auto p-4 mb-8 my-auto">
       <h1 className="text-4xl font-bold text-center mt-4 mb-8">Schedule</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2">
-        {days.map((day) => (
-          <div key={day} className="card bg-base-100 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title text-2xl mb-4">{day}</h2>
-              {sortClassesByTime(
-                Object.entries(scheduleData).filter(
-                  ([_, classData]) => classData.day === day,
-                ),
-              ).map(([id, classData]) => (
-                <div key={id} className="mb-1 p-4 bg-base-200 rounded-lg">
-                  {isAdmin && editingClass && editingClass.id === id ? (
-                    <div className="space-y-2">
-                      <input
-                        type="text"
-                        value={editingClass.name}
-                        onChange={(e) =>
-                          handleEditChange("name", e.target.value)
-                        }
-                        className="input input-bordered w-full"
-                      />
-                      <input
-                        type="time"
-                        value={editingClass.startTime}
-                        onChange={(e) =>
-                          handleEditChange("startTime", e.target.value)
-                        }
-                        className="input input-bordered w-full"
-                      />
-                      <input
-                        type="time"
-                        value={editingClass.endTime}
-                        onChange={(e) =>
-                          handleEditChange("endTime", e.target.value)
-                        }
-                        className="input input-bordered w-full"
-                      />
-                      <input
-                        type="text"
-                        value={editingClass.weeks}
-                        onChange={(e) =>
-                          handleEditChange("weeks", e.target.value)
-                        }
-                        className="input input-bordered w-full"
-                      />
-                      <div className="flex justify-end space-x-2 mt-2">
-                        <button
-                          onClick={() => updateClass(id, editingClass)}
-                          className="btn btn-primary btn-sm"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={cancelEditing}
-                          className="btn btn-ghost btn-sm"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="font-semibold">{classData.name}</p>
-                      <p className="text-sm">
-                        {formatTime(classData.startTime)}
-                        {classData.endTime && (
-                          <> to {formatTime(classData.endTime)}</>
-                        )}
-                      </p>
-                      <p className="text-sm">Weeks: {classData.weeks}</p>
-                      {isAdmin && (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+        {days
+          .filter((day) =>
+            Object.entries(scheduleData).some(
+              ([_, classData]) => classData.day === day,
+            ),
+          )
+          .map((day) => (
+            <div key={day} className="card bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title text-2xl mb-4">{day}</h2>
+                {sortClassesByTime(
+                  Object.entries(scheduleData).filter(
+                    ([_, classData]) => classData.day === day,
+                  ),
+                ).map(([id, classData]) => (
+                  <div key={id} className="mb-1 p-4 bg-base-200 rounded-lg">
+                    {isAdmin && editingClass && editingClass.id === id ? (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={editingClass.name}
+                          onChange={(e) =>
+                            handleEditChange("name", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <input
+                          type="time"
+                          value={editingClass.startTime}
+                          onChange={(e) =>
+                            handleEditChange("startTime", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <input
+                          type="time"
+                          value={editingClass.endTime}
+                          onChange={(e) =>
+                            handleEditChange("endTime", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
+                        <input
+                          type="text"
+                          value={editingClass.weeks}
+                          onChange={(e) =>
+                            handleEditChange("weeks", e.target.value)
+                          }
+                          className="input input-bordered w-full"
+                        />
                         <div className="flex justify-end space-x-2 mt-2">
                           <button
-                            onClick={() => startEditing(id, classData)}
-                            className="btn btn-outline btn-xs"
+                            onClick={() => updateClass(id, editingClass)}
+                            className="btn btn-primary btn-sm"
                           >
-                            Edit
+                            Save
                           </button>
                           <button
-                            onClick={() => setDeletingClass(id)}
-                            className="btn btn-error btn-xs"
+                            onClick={cancelEditing}
+                            className="btn btn-ghost btn-sm"
                           >
-                            Delete
+                            Cancel
                           </button>
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-semibold">{classData.name}</p>
+                        <p className="text-sm">
+                          {formatTime(classData.startTime)}
+                          {classData.endTime && (
+                            <> to {formatTime(classData.endTime)}</>
+                          )}
+                        </p>
+                        <p className="text-sm">Weeks: {classData.weeks}</p>
+                        {isAdmin && (
+                          <div className="flex justify-end space-x-2 mt-2">
+                            <button
+                              onClick={() => startEditing(id, classData)}
+                              className="btn btn-outline btn-xs"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => setDeletingClass(id)}
+                              className="btn btn-error btn-xs"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
       {/* Only show the form to add new classes if the user is an admin */}
       {isAdmin && (
