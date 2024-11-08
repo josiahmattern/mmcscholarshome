@@ -172,7 +172,7 @@ export default function Nav() {
             </div>
             */}
             {/* Theme Switcher */}
-            <ThemeSwitcher />
+            {/*<ThemeSwitcher />/*}
             {/* Auth Buttons */}
             {user ? (
               <button className="btn blue-btn ml-4" onClick={handleLogout}>
@@ -277,7 +277,7 @@ export default function Nav() {
           {/* Auth Buttons */}
           <div className="flex w-full text-left px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200">
             <div>Change Theme:</div>
-            <ThemeSwitcher />
+            {/*<ThemeSwitcher />*/}
           </div>
           {user ? (
             <button
