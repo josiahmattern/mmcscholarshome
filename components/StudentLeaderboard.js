@@ -91,15 +91,15 @@ const LeaderboardComponent = ({ isAdmin = false }) => {
     .sort((a, b) => {
       const aPoints = a.members
         ? a.members.reduce((sum, memberName) => {
-            const member = students.find((s) => s.name === memberName);
-            return sum + (member ? member.totalPoints : 0);
-          }, 0) / a.members.length
+          const member = students.find((s) => s.name === memberName);
+          return sum + (member ? member.totalPoints : 0);
+        }, 0) / a.members.length
         : 0;
       const bPoints = b.members
         ? b.members.reduce((sum, memberName) => {
-            const member = students.find((s) => s.name === memberName);
-            return sum + (member ? member.totalPoints : 0);
-          }, 0) / b.members.length
+          const member = students.find((s) => s.name === memberName);
+          return sum + (member ? member.totalPoints : 0);
+        }, 0) / b.members.length
         : 0;
       return bPoints - aPoints;
     });
@@ -215,7 +215,7 @@ const LeaderboardComponent = ({ isAdmin = false }) => {
             setShowAdminActions(false);
           }}
         >
-          Students
+          Individuals
         </a>
         <a
           className={`tab ${activeTab === "teams" ? "tab-active" : ""}`}

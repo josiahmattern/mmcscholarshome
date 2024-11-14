@@ -23,11 +23,7 @@ export default function Schedule({ isAdmin = false }) {
     const unsubscribe = onValue(
       scheduleRef,
       (snapshot) => {
-        if (snapshot.exists()) {
-          setScheduleData(snapshot.val());
-        } else {
-          setScheduleData({});
-        }
+        setScheduleData(snapshot.exists() ? snapshot.val() : {});
         setLoading(false);
       },
       (error) => {
@@ -35,7 +31,6 @@ export default function Schedule({ isAdmin = false }) {
         setLoading(false);
       },
     );
-
     return () => unsubscribe();
   }, []);
 
@@ -52,8 +47,7 @@ export default function Schedule({ isAdmin = false }) {
 
   const updateClass = async (id, updatedData) => {
     try {
-      const classRef = ref(db, `schedule/${id}`);
-      await update(classRef, updatedData);
+      await update(ref(db, `schedule/${id}`), updatedData);
       setEditingClass(null);
     } catch (err) {
       setError("Error updating class");
@@ -63,8 +57,7 @@ export default function Schedule({ isAdmin = false }) {
   const deleteClass = async () => {
     if (!deletingClass) return;
     try {
-      const classRef = ref(db, `schedule/${deletingClass}`);
-      await remove(classRef);
+      await remove(ref(db, `schedule/${deletingClass}`));
       setDeletingClass(null);
     } catch (err) {
       setError("Error deleting class");
@@ -88,17 +81,15 @@ export default function Schedule({ isAdmin = false }) {
     const [hours, minutes] = time.split(":");
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? "PM" : "AM";
-    const formattedHour = hour % 12 || 12;
-    return `${formattedHour}:${minutes} ${ampm}`;
+    return `${hour % 12 || 12}:${minutes} ${ampm}`;
   };
 
-  const sortClassesByTime = (classes) => {
-    return classes.sort((a, b) => {
-      const timeA = a[1].startTime.replace(":", "");
-      const timeB = b[1].startTime.replace(":", "");
-      return timeA.localeCompare(timeB);
-    });
-  };
+  const sortClassesByTime = (classes) =>
+    classes.sort((a, b) =>
+      a[1].startTime
+        .replace(":", "")
+        .localeCompare(b[1].startTime.replace(":", "")),
+    );
 
   if (loading)
     return (
@@ -109,33 +100,37 @@ export default function Schedule({ isAdmin = false }) {
   if (error)
     return (
       <div className="alert alert-error shadow-lg">
-        <div>
-          <span>{error}</span>
-        </div>
+        <span>{error}</span>
       </div>
     );
 
   return (
-    <div className="container mx-auto p-4 mb-8 my-auto">
-      <h1 className="text-4xl font-bold text-center mt-4 mb-8">Schedule</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold text-center my-8">
+        AU 24 Project Group Schedule
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {days
           .filter((day) =>
-            Object.entries(scheduleData).some(
-              ([_, classData]) => classData.day === day,
-            ),
+            Object.values(scheduleData).some((c) => c.day === day),
           )
-          .map((day) => (
-            <div key={day} className="card bg-base-100 shadow-xl">
+          .map((day, index) => (
+            <div
+              key={day}
+              className={`card bg-base-100 shadow-xl border ${index % 3 === 0
+                  ? "border-secondary"
+                  : index % 3 === 1
+                    ? "border-primary"
+                    : "border-accent"
+                }`}
+            >
               <div className="card-body">
                 <h2 className="card-title text-2xl mb-4">{day}</h2>
                 {sortClassesByTime(
-                  Object.entries(scheduleData).filter(
-                    ([_, classData]) => classData.day === day,
-                  ),
+                  Object.entries(scheduleData).filter(([, c]) => c.day === day),
                 ).map(([id, classData]) => (
-                  <div key={id} className="mb-1 p-4 bg-base-200 rounded-lg">
-                    {isAdmin && editingClass && editingClass.id === id ? (
+                  <div key={id} className="mb-2 p-4 bg-base-200 rounded-lg">
+                    {isAdmin && editingClass?.id === id ? (
                       <div className="space-y-2">
                         <input
                           type="text"
@@ -188,10 +183,9 @@ export default function Schedule({ isAdmin = false }) {
                       <div>
                         <p className="font-semibold">{classData.name}</p>
                         <p className="text-sm">
-                          {formatTime(classData.startTime)}
-                          {classData.endTime && (
-                            <> to {formatTime(classData.endTime)}</>
-                          )}
+                          {formatTime(classData.startTime)}{" "}
+                          {classData.endTime &&
+                            `to ${formatTime(classData.endTime)}`}
                         </p>
                         <p className="text-sm">Weeks: {classData.weeks}</p>
                         {isAdmin && (
@@ -218,7 +212,6 @@ export default function Schedule({ isAdmin = false }) {
             </div>
           ))}
       </div>
-      {/* Only show the form to add new classes if the user is an admin */}
       {isAdmin && (
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
@@ -285,8 +278,6 @@ export default function Schedule({ isAdmin = false }) {
           </form>
         </div>
       )}
-
-      {/* Delete Confirmation Modal */}
       <input
         type="checkbox"
         id="delete-modal"

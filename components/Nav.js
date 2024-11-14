@@ -117,7 +117,7 @@ export default function Nav() {
                 className="font-bold text-bg-base-200 hover:text-zinc-500"
                 href="/projects"
               >
-                Projects
+                Project Group Offerings
               </Link>
             </div>
             {/* Our Teams Dropdown 
@@ -224,7 +224,7 @@ export default function Nav() {
             className="block px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
             href="/projects"
           >
-            Projects
+            Project Group Offerings
           </Link>
           {/* Our Teams Mobile Dropdown 
           <div className="block">

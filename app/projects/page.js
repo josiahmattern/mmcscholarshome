@@ -6,25 +6,25 @@ const projects = [
   {
     link: "https://youtu.be/iYMnkLS-NPI",
     title: "After Effects",
-    desc: "After Effects is a software program used for special and visual effects animations, and is often utilized in television and film production",
+    desc: "After Effects is a software program used for special and visual effects animations, and is often utilized in television and film production.",
     length: "7",
   },
   {
     link: "https://youtu.be/B6HE7xImZvA",
     title: "Applied Marketing",
-    desc: "Students will learn the fundamentals of how to write a marketing plan for a growing business.",
+    desc: "In this project group, marketing strategies will be introduced, as well as how to use them when growing a business. Students will encounter elements and techniques used by Fortune 500 companies, analyze marketing plans, identify target markets, and explore relationships between businesses and consumers.",
     length: "14",
   },
   {
     link: "https://youtu.be/p08lItcBzV4",
     title: "Blender",
-    desc: "Learn the basics of 3D modeling with this amazing free software.",
+    desc: "Project group participants will learn about the different features that Blender has, such as modeling, animation, rendering, even video editing and game creation.",
     length: "14",
   },
   {
     link: "https://youtu.be/hajOu3WAmiw",
     title: "ChatGPT Basics",
-    desc: "Learn how to various AI platforms to improve your productivity.",
+    desc: "The ChatGPT Basics project group will teach students how to use ChatGPT and a variety of other similar generative AI processing programs, as well as teach students about the issues involving AI, its potential dangers, and the dangers of its irresponsible use.",
     length: "7",
   },
   {
@@ -35,20 +35,20 @@ const projects = [
   },
   {
     link: "https://youtu.be/R3mgT3sSlnI",
-    title: "Financial Literacy/ Investing",
-    desc: "Learn about the stock market and different ways you can invest.",
+    title: "Financial Literacy & Investing",
+    desc: "This project group will touch on topics such as retirement, what it means to invest in stocks and bonds, savings accounts, and how to go about paying off debts.",
     length: "7",
   },
   {
     link: "https://youtu.be/L8QUauvatrQ",
     title: "Illustrator Basics",
-    desc: "Learn the in's and out's of Adobe Illustrator, a high-end graphic editing software.",
+    desc: "Throughout this project group, students will learn the skills and tools necessary for understanding Adobe Illustrator. Such skills include how to use shape and pen tools, how to creatively use typography, how to work with multiple layers, and how to create a custom logo.",
     length: "14",
   },
   {
     link: "https://youtu.be/ssSHtqNVZ0M",
     title: "InDesign Basics",
-    desc: "In this project group students will learn graphic layout basics with InDesign.",
+    desc: "Adobe InDesign is a desktop publishing software and can be used to create works such as posters, fliers, magazines, newspapers, and books. In this project group, students will learn the basics of by designing periodical publications and posters using information about grids and typography.",
     length: "7",
   },
   {
@@ -60,19 +60,19 @@ const projects = [
   {
     link: "https://youtu.be/_0aHh130Z6M",
     title: "Microsoft Office 365",
-    desc: "Learn how to get the most out of these program you already use everyday.",
+    desc: "The Microsoft 365 suite (including Word, Excel, and PowerPoint) is a powerful collection of software used across industries and universities. In this project group, students will learn the basics of the Microsoft 365 suite and how to tailor it to their academic and professional needs.",
     length: "7",
   },
   {
     link: "https://youtu.be/nZ1umZiwjmw",
     title: "Photoshop",
-    desc: "Ever wish you could touch up your photos or make a collage? Learn basic digital imaging skills with Photoshop, the industry standard that works on both macs and PCs. No experience needed.",
+    desc: "Industry-standard across the globe, Adobe Photoshop is a key tool for anyone looking to have a creative career. Throughout this project group, students will learn the skills and tools necessary for understanding Adobe Photoshop. Such skills include how to use the lasso and pen tools, how to color correct images, how to work with masks, and how to create a custom poster, .gif animations, and more!",
     length: "14",
   },
   {
     link: "https://youtu.be/AhG5V8YQvW8",
     title: "Podcasting",
-    desc: "Learn how to make a podcast using the Anchor Podcasting App.Use tools such as Audacity, Garageband and more!",
+    desc: "In this project group, you will learn the basics of podcasting, such as recording and editing audio, marketing a podcast, and sharing it with an online community.",
     length: "7",
   },
   {
@@ -90,13 +90,13 @@ const projects = [
   {
     link: "https://youtu.be/-N6NGxfiRYU",
     title: "Professional Development",
-    desc: "Professional Development focuses on everything from resume writing and interviewing skills, to what to wear.",
+    desc: "Throughout this project group, students will learn the essential skills necessary for success in a typical business environment, such as how to create a notable resume, how to maintain a professional social media presence, how to network, and how to apply for jobs and internships.",
     length: "7",
   },
   {
     link: "https://youtu.be/wtY3n-N4ZzQ",
     title: "Public Speaking",
-    desc: "Are you afraid of public speaking? Are you looking for a fun place to gain new skills?",
+    desc: "Public speaking is an invaluable skill, that will help any person further their own career and allow them to easily express their ideas to the world. These interactions happen every day, in situations such as job interviews, presentations, speeches, and daily conversation. Throughout this seven week project group, students will learn how to write, produce, and present an effective speech.",
     length: "14",
   },
   {
@@ -114,13 +114,13 @@ const projects = [
   {
     link: "https://youtu.be/MFyais-GwAI",
     title: "Tableau",
-    desc: "Tableau is a cool, free new app that business and researchers use to make their data more visual.",
+    desc: "Tableau is a user-friendly data analysis program used to visualize data, perform calculations, and analyze your results. Tableau is the most popular software for data analysis due to its simple design, convenience, and powerful data processing abilities. In this class, you will learn how to effectively build dashboards and data sets using the expansive list of features that Tableau has to offer.",
     length: "7",
   },
   {
     link: "https://youtu.be/89hfe3H6E_0",
     title: "Video Basics",
-    desc: "The video production project group gives students the chance to create their own 5-10 minutes movie. Student pairs create a 3 act plot, write dialogue, and then shoot it.",
+    desc: "Create your very own short film with the video project group! In this group you will learn how to shoot, direct, and make your videos look great, no prior editing experience required. Learn about the narrative and documentary processes through interactive lessons, as well as how to use studio lights and other important video equipment.",
     length: "7",
   },
   {
@@ -138,7 +138,9 @@ export default function Projects() {
     <main className="bg-base-200 min-h-screen pb-6">
       <Nav />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-2">Projects</h1>
+        <h1 className="text-4xl font-bold text-center mb-2">
+          Project Group Offerings
+        </h1>
         <h1 className="text-2xl text-bg-base-300 text-center mb-8">
           Click on link to view video
         </h1>
