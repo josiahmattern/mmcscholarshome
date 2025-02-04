@@ -1,0 +1,6 @@
+1. Create a new subdomain on hostinger.
+2. Go to DNS zone editor and remove the alias that the new subdomain has created.
+3. Create a new cname with the name being whatever your subdomain is and the target being where vercel is hosting your thing.
+4. Set TTL to 100 for fast upload times.
+5. Go to your website on vercel and add the new domain to your list of domains on your project.
+6. If you have set everything up correctly, after a couple of minutes your new subdomain should point to the site hosted by vercel.

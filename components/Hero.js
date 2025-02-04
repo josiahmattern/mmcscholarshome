@@ -7,7 +7,7 @@ import BackgroundAnimation from "@/components/BackgroundAnimation";
 export default function Hero() {
   const LIGHT = "cmyk";
   const DARK = "darkcmyk";
-  
+
   // State to manage the theme
   const [theme, setTheme] = useState(LIGHT);
 
