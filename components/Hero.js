@@ -32,14 +32,16 @@ export default function Hero() {
       {/* Hero Content */}
       <div className="relative flex-grow flex flex-col justify-center items-center z-10">
         <div className="hero-content text-center rounded-md bg-gray-300 bg-opacity-0 p-6">
-          <div className="max-w-lg">
-            <h1 className="text-5xl font-bold mb-6">Welcome to</h1>
+          <div className="max-w-2xl">
+            <h1 className="text-3xl md:text-5xl font-bold mb-6">
+              Hey Honors and Scholars!
+            </h1>
             <Image
               src="/MMCScholars.png"
               alt="MMC Logo"
               width={390}
               height={390}
-              className="inline"
+              className="inline w-full max-w-xs md:max-w-md mx-auto"
             />
           </div>
         </div>

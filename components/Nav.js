@@ -112,6 +112,8 @@ export default function Nav() {
                 Leaderboard
               </Link>
             </div>
+            {/* Project Group Offerings 
+
             <div className="px-2 py-1 rounded-lg">
               <Link
                 className="font-bold text-bg-base-200 hover:text-zinc-500"
@@ -120,6 +122,7 @@ export default function Nav() {
                 Project Group Offerings
               </Link>
             </div>
+            */}
             {/* Our Teams Dropdown 
             <div
               className="relative px-2 py-1 hover:bg-base-200 rounded-lg"
@@ -220,12 +223,15 @@ export default function Nav() {
           >
             Leaderboard
           </Link>
+          {/* Project Group Offerings
+
           <Link
             className="block px-3 py-2 rounded-md text-base font-medium text-bg-base-200 hover:text-bg-base-200 hover:bg-base-200"
             href="/projects"
           >
             Project Group Offerings
           </Link>
+          */}
           {/* Our Teams Mobile Dropdown 
           <div className="block">
             <button

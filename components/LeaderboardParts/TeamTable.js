@@ -16,11 +16,11 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
       <thead>
         <tr>
           <th>Rank</th>
-          <th className="hidden md:table-cell">Image</th>{" "}
+          <th>Logo</th>{" "}
           {/* Hidden on small screens */}
           <th>Team Name</th>
           <th>Average Points</th>
-          <th>Members</th>
+          <th className="hidden md:table-cell">Members</th>{" "}
           {isAdmin && <th>Actions</th>}
         </tr>
       </thead>
@@ -28,7 +28,7 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
         {teams.map((team, index) => (
           <tr key={team.id}>
             <td>{index + 1}</td>
-            <td className="hidden md:table-cell">
+            <td >
               {" "}
               {/* Hidden on small screens */}
               <div className="avatar">
@@ -59,7 +59,8 @@ const TeamTable = ({ teams, students, isAdmin, onEdit, onDelete }) => {
               <div className="font-bold">{team.name}</div>
             </td>
             <td>{calculateAveragePoints(team)}</td>
-            <td>{team.members ? team.members.join(", ") : "No members"}</td>
+            <td className="hidden md:table-cell">
+              {team.members ? team.members.join(", ") : "No members"}</td>
             {isAdmin && (
               <td>
                 <button
