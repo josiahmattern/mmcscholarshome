@@ -32,13 +32,13 @@ export default function Hero() {
       {/* Hero Content */}
       <div className="relative flex-grow flex justify-center items-center z-10 px-4">
         <div className="hero-content text-center max-w-2xl w-full flex-col">
-          <h1 className="text-3xl md:text-5xl font-bold mb-2">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
             Hey Honors and Scholars!
-            <div className="text-2xl md:text-4xl font-bold mt-1 text-primary">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-bold mt-1 lg:mt-2 text-primary">
               Ready to get your geek on?
             </div>
           </h1>
-          <p className="text-md md:text-xl mb-6 mx-auto">
+          <p className="text-md md:text-xl max-w-md lg:max-w-2xl mb-6 mx-auto">
             The Digital Sandbox offers FREE project groups in graphic design,
             web, video, and audio production. Taught by students and open to
             Honors & Scholars, they begin January 6 with the first session
