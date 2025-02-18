@@ -130,13 +130,12 @@ export default function Schedule({ isAdmin = false }) {
           .map((day, index) => (
             <div
               key={day}
-              className={`card bg-base-100 shadow-xl border ${
-                index % 3 === 0
+              className={`card bg-base-100 shadow-xl border ${index % 3 === 0
                   ? "border-secondary"
                   : index % 3 === 1
                     ? "border-primary"
                     : "border-accent"
-              }`}
+                }`}
             >
               <div className="card-body">
                 <h2 className="card-title text-2xl mb-4">{day}</h2>

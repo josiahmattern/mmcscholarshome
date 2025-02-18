@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import Nav from "@/components/Nav";
-import Image from "next/image";
 import BackgroundAnimation from "@/components/BackgroundAnimation";
+import Link from "next/link";
 
 export default function Hero() {
   const LIGHT = "cmyk";
@@ -15,11 +15,11 @@ export default function Hero() {
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || LIGHT;
     setTheme(savedTheme);
-  }, []); // Empty dependency array ensures this runs once after the component mounts
+  }, []);
 
   return (
-    <main className="relative flex flex-col h-screen overflow-hidden">
-      {/* Navbar with higher z-index to keep it on top */}
+    <main className="relative flex flex-col min-h-screen overflow-hidden">
+      {/* Navbar */}
       <div className="relative z-20">
         <Nav />
       </div>
@@ -30,25 +30,32 @@ export default function Hero() {
       </div>
 
       {/* Hero Content */}
-      <div className="relative flex-grow flex flex-col justify-center items-center z-10">
-        <div className="hero-content text-center rounded-md bg-gray-300 bg-opacity-0 p-6">
-          <div className="max-w-2xl">
-            <h1 className="text-3xl md:text-5xl font-bold mb-6">
-              Hey Honors and Scholars!
-            </h1>
-            <Image
-              src="/MMCScholars.png"
-              alt="MMC Logo"
-              width={390}
-              height={390}
-              className="inline w-full max-w-xs md:max-w-md mx-auto"
-            />
-          </div>
+      <div className="relative flex-grow flex justify-center items-center z-10 px-4">
+        <div className="hero-content text-center max-w-2xl w-full flex-col">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2">
+            Hey Honors and Scholars!
+            <div className="text-2xl md:text-4xl font-bold mt-1 text-primary">
+              Ready to get your geek on?
+            </div>
+          </h1>
+          <p className="text-md md:text-xl mb-6 mx-auto">
+            The Digital Sandbox offers FREE project groups in graphic design,
+            web, video, and audio production. Taught by students and open to
+            Honors & Scholars, they begin January 6 with the first session
+            online; some may later move in-person. No experience is necessary.
+            For Zoom links, instructor email, and more information, click below.
+          </p>
+
+          <Link
+            className="btn btn-secondary rounded-md w-44 mx-auto mb-8"
+            href="https://go.osu.edu/sandboxsp25"
+          >
+            More Information
+          </Link>
         </div>
 
-        {/* Scroll Down Indicator */}
-        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-center z-20">
-          <p className="text-md mb-4">Scroll down to view schedule</p>
+        {/* Scroll Down Indicator (optional) */}
+        <div className="absolute bottom-6 md:bottom-12 left-1/2 transform -translate-x-1/2 text-center z-20">
           <div className="animate-bounce">
             <svg
               xmlns="http://www.w3.org/2000/svg"
