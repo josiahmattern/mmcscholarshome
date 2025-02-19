@@ -49,6 +49,7 @@ export default function Hero() {
           <Link
             className="btn btn-secondary rounded-md w-44 mx-auto mb-8"
             href="https://go.osu.edu/sandboxsp25"
+            prefetch={false}
           >
             More Information
           </Link>

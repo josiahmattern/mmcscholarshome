@@ -216,7 +216,7 @@ export default function Schedule({ isAdmin = false }) {
                             <p className="text-sm">Weeks: {classData.weeks}</p>
                           </div>
                           {classData.videoURL && (
-                            <Link href={classData.videoURL}>
+                            <Link href={classData.videoURL} prefetch={false}>
                               <svg
                                 className="ml-4 mr-4 h-10 w-10 text-blue-500 hover:text-blue-800 cursor-pointer"
                                 xmlns="http://www.w3.org/2000/svg"
