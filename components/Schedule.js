@@ -306,9 +306,9 @@ export default function Schedule({ isAdmin = false }) {
                   }
                   className="input input-bordered w-full"
                 />
-  <div class="label">
-    <span class="label-text">Start time</span>
-  </div>
+                <div class="label">
+                  <span class="label-text">Start time</span>
+                </div>
                 <input
                   type="time"
                   placeholder="Start Time (required)"
@@ -318,9 +318,9 @@ export default function Schedule({ isAdmin = false }) {
                   }
                   className="input input-bordered w-full"
                 />
-  <div class="label">
-    <span class="label-text">End time</span>
-  </div>
+                <div class="label">
+                  <span class="label-text">End time</span>
+                </div>
                 <input
                   type="time"
                   placeholder="End Time (optional)"

@@ -41,9 +41,11 @@ export default function Hero() {
           <p className="text-md md:text-xl max-w-md lg:max-w-2xl mb-6 mx-auto">
             The Digital Sandbox offers FREE project groups in graphic design,
             web, video, and audio production. Taught by students and open to
-            Honors & Scholars, they begin <span className="text-accent">February 24th</span> with the first session
-            online; some may later move in-person. No experience is necessary.
-            For Zoom links, instructor email, and more information, click below.
+            Honors & Scholars, they begin{" "}
+            <span className="text-accent">February 24th</span> with the first
+            session online; some may later move in-person. No experience is
+            necessary. For Zoom links, instructor email, and more information,
+            click below.
           </p>
 
           <a
