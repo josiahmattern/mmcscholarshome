@@ -46,13 +46,12 @@ export default function Hero() {
             For Zoom links, instructor email, and more information, click below.
           </p>
 
-          <Link
+          <a
             className="btn btn-secondary rounded-md w-44 mx-auto mb-8"
             href="https://go.osu.edu/sandboxsp25"
-            prefetch={false}
           >
             More Information
-          </Link>
+          </a>
         </div>
 
         {/* Scroll Down Indicator (optional) */}
