@@ -115,14 +115,14 @@ export default function Schedule({ isAdmin = false }) {
     );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl md:text-4xl font-bold text-center mt-6 mb-10">
-        <div className="mb-2">SP 25 Project Group Schedule</div>
+    <div className="mx-auto">
+      <h1 className="text-2xl md:text-3xl font-bold text-center mt-8 mb-6">
+        <div className="mb-1">SP 25 Project Group Schedule</div>
         <div className="text-lg text-neutral-500">
           (click blue circle to view informational video)
         </div>
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
         {days
           .filter((day) =>
             Object.values(scheduleData).some((c) => c.day === day),
@@ -137,7 +137,7 @@ export default function Schedule({ isAdmin = false }) {
                     : "border-accent"
                 }`}
             >
-              <div className="card-body">
+              <div className="card-body w-full">
                 <h2 className="card-title text-2xl mb-4">{day}</h2>
                 {sortClassesByTime(
                   Object.entries(scheduleData).filter(([, c]) => c.day === day),
@@ -259,7 +259,7 @@ export default function Schedule({ isAdmin = false }) {
           <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
           <form onSubmit={addClass} className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <select
                   value={newClass.day}
                   onChange={(e) =>
