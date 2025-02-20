@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { ref, onValue, push, set, update, remove } from "firebase/database";
 import { db } from "@/lib/firebaseConfig.js"; // Adjust this import path as needed
-import Link from "next/link";
 
 export default function Schedule({ isAdmin = false }) {
   const [scheduleData, setScheduleData] = useState({});
@@ -38,9 +37,24 @@ export default function Schedule({ isAdmin = false }) {
 
   const addClass = async (e) => {
     e.preventDefault();
+    // Clear any previous error
+    setError(null);
+
+    // Validate required fields (everything except endTime)
+    if (
+      !newClass.day.trim() ||
+      !newClass.name.trim() ||
+      !newClass.startTime.trim() ||
+      !newClass.weeks.trim()
+    ) {
+      alert("All fields except 'End Time' and 'Video URL' are required.");
+      return;
+    }
+
     try {
       const newClassRef = push(ref(db, "schedule"));
       await set(newClassRef, newClass);
+      // Reset the form
       setNewClass({
         day: "",
         name: "",
@@ -56,7 +70,6 @@ export default function Schedule({ isAdmin = false }) {
 
   const updateClass = async (id, updatedData) => {
     try {
-      // Use template literal for the path
       await update(ref(db, `schedule/${id}`), updatedData);
       setEditingClass(null);
     } catch (err) {
@@ -79,7 +92,7 @@ export default function Schedule({ isAdmin = false }) {
   };
 
   const handleEditChange = (field, value) => {
-    setEditingClass({ ...editingClass, [field]: value });
+    setEditingClass((prev) => ({ ...prev, [field]: value }));
   };
 
   const cancelEditing = () => {
@@ -130,12 +143,13 @@ export default function Schedule({ isAdmin = false }) {
           .map((day, index) => (
             <div
               key={day}
-              className={`card bg-base-100 shadow-xl border ${index % 3 === 0
+              className={`card bg-base-100 shadow-xl border ${
+                index % 3 === 0
                   ? "border-secondary"
                   : index % 3 === 1
                     ? "border-primary"
                     : "border-accent"
-                }`}
+              }`}
             >
               <div className="card-body w-full">
                 <h2 className="card-title text-2xl mb-4">{day}</h2>
@@ -216,7 +230,11 @@ export default function Schedule({ isAdmin = false }) {
                             <p className="text-sm">Weeks: {classData.weeks}</p>
                           </div>
                           {classData.videoURL && (
-                            <a href={classData.videoURL}>
+                            <a
+                              href={classData.videoURL}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
                               <svg
                                 className="ml-4 mr-4 h-10 w-10 text-blue-500 hover:text-blue-800 cursor-pointer"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -256,10 +274,15 @@ export default function Schedule({ isAdmin = false }) {
 
       {isAdmin && (
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">Add New Class</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Add New Class</h2>
+          {/* Display any error for adding a new class */}
+          {error && (
+            <div className="alert alert-error shadow-lg mb-4">{error}</div>
+          )}
+
           <form onSubmit={addClass} className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-2">
                 <select
                   value={newClass.day}
                   onChange={(e) =>
@@ -267,7 +290,7 @@ export default function Schedule({ isAdmin = false }) {
                   }
                   className="select select-bordered w-full"
                 >
-                  <option value="">Select Day</option>
+                  <option value="">Select Day (required)</option>
                   {days.map((day) => (
                     <option key={day} value={day}>
                       {day}
@@ -276,25 +299,31 @@ export default function Schedule({ isAdmin = false }) {
                 </select>
                 <input
                   type="text"
-                  placeholder="Class Name"
+                  placeholder="Class Name (required)"
                   value={newClass.name}
                   onChange={(e) =>
                     setNewClass({ ...newClass, name: e.target.value })
                   }
                   className="input input-bordered w-full"
                 />
+  <div class="label">
+    <span class="label-text">Start time</span>
+  </div>
                 <input
                   type="time"
-                  placeholder="Start Time"
+                  placeholder="Start Time (required)"
                   value={newClass.startTime}
                   onChange={(e) =>
                     setNewClass({ ...newClass, startTime: e.target.value })
                   }
                   className="input input-bordered w-full"
                 />
+  <div class="label">
+    <span class="label-text">End time</span>
+  </div>
                 <input
                   type="time"
-                  placeholder="End Time"
+                  placeholder="End Time (optional)"
                   value={newClass.endTime}
                   onChange={(e) =>
                     setNewClass({ ...newClass, endTime: e.target.value })
@@ -303,7 +332,7 @@ export default function Schedule({ isAdmin = false }) {
                 />
                 <input
                   type="text"
-                  placeholder="Weeks"
+                  placeholder="Weeks (required)"
                   value={newClass.weeks}
                   onChange={(e) =>
                     setNewClass({ ...newClass, weeks: e.target.value })

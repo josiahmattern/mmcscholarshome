@@ -35,168 +35,113 @@ export default function Admin() {
     return () => unsubscribe();
   }, [router]);
 
-  const exportToCSV = async () => {
-    try {
-      // Fetch students data
-      const studentsRef = ref(db, "students");
-      const studentsSnapshot = await get(studentsRef);
-      const studentsData = [];
-      studentsSnapshot.forEach((childSnapshot) => {
-        studentsData.push({
-          id: childSnapshot.key,
-          ...childSnapshot.val(),
-        });
+const exportToCSV = async () => {
+  try {
+    // Fetch students data
+    const studentsRef = ref(db, "students");
+    const studentsSnapshot = await get(studentsRef);
+    const studentsData = [];
+    studentsSnapshot.forEach((childSnapshot) => {
+      studentsData.push({
+        id: childSnapshot.key,
+        ...childSnapshot.val(),
       });
+    });
 
-      // Create a mapping of student IDs to names
-      const studentIdToName = {};
-      studentsData.forEach((student) => {
-        studentIdToName[student.id] = student.name;
+
+    // Fetch teams data
+    const teamsRef = ref(db, "teams");
+    const teamsSnapshot = await get(teamsRef);
+    const teamsData = [];
+    teamsSnapshot.forEach((childSnapshot) => {
+      teamsData.push({
+        id: childSnapshot.key,
+        ...childSnapshot.val(),
       });
+    });
 
-      // Fetch teams data
-      const teamsRef = ref(db, "teams");
-      const teamsSnapshot = await get(teamsRef);
-      const teamsData = [];
-      teamsSnapshot.forEach((childSnapshot) => {
-        teamsData.push({
-          id: childSnapshot.key,
-          ...childSnapshot.val(),
-        });
-      });
+    // Fetch schedule data
+    const scheduleRef = ref(db, "schedule");
+    const scheduleSnapshot = await get(scheduleRef);
+    const scheduleData = [];
+    scheduleSnapshot.forEach((childSnapshot) => {
+      scheduleData.push(childSnapshot.val());
+    });
 
-      // Fetch schedule data
-      const scheduleRef = ref(db, "schedule");
-      const scheduleSnapshot = await get(scheduleRef);
-      const scheduleData = [];
-      scheduleSnapshot.forEach((childSnapshot) => {
-        scheduleData.push(childSnapshot.val());
-      });
+    // Start building the CSV text
+    let csvContent = "";
 
-      // Create CSV content
-      let csvContent = "data:text/csv;charset=utf-8,";
+    // ----- STUDENTS SECTION -----
+    csvContent += "Students\n";
+    csvContent += "Name,Student ID,Project Points,Community Points,Total Points,Graduation Year,Project Groups\n";
+    studentsData.forEach((student) => {
+      const name = student.name || "";
+      const studentId = student.studentId || "";
+      const projectPoints = student.projectPoints ?? 0;
+      const communityPoints = student.communityPoints ?? 0;
+      const totalPoints = projectPoints + communityPoints;
+      const graduationYear = student.graduationYear ?? "";
+      // Make sure projectGroups is an array before joining
+      const projectGroups = Array.isArray(student.projectGroups)
+        ? student.projectGroups.join(", ")
+        : "";
 
-      // Students section
-      csvContent += "Students\n";
-      csvContent +=
-        "Name,Student ID,Project Points,Community Points,Graduation Year,Project Groups\n";
-      studentsData.forEach((student) => {
-        csvContent += `${student.name},${student.studentId},${student.projectPoints},${student.communityPoints},${student.graduationYear},"${student.projectGroups.join(", ")}"\n`;
-      });
+      csvContent += `${name},${studentId},${projectPoints},${communityPoints},${totalPoints},${graduationYear},"${projectGroups}"\n`;
+    });
 
-      csvContent += "\nTeams\n";
-      csvContent += "Name,Members\n";
-      teamsData.forEach((team) => {
-        const memberNames = team.members
-          .map((memberId) => studentIdToName[memberId] || "Unknown")
-          .join(", ");
-        csvContent += `${team.name},"${memberNames}"\n`;
-      });
+    csvContent += "\n";
 
-      csvContent += "\nSchedule\n";
-      csvContent += "Day,Name,Start Time,End Time,Weeks\n";
-      scheduleData.forEach((event) => {
-        csvContent += `${event.day},${event.name},${event.startTime},${event.endTime},${event.weeks}\n`;
-      });
+    // ----- TEAMS SECTION -----
+    csvContent += "Teams\n";
+    csvContent += "Name,Points,Members\n";
+teamsData.forEach((team) => {
+  // Since members are now actual names:
+  const membersArray = Array.isArray(team.members) ? team.members : [];
+  // Just join them directly:
+  const memberNames = membersArray.join(", "); 
 
-      // Create a download link and trigger the download
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "mmc_data_export.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error exporting data: ", error);
-      alert("An error occurred while exporting data. Please try again.");
-    }
-  };
+  csvContent += `${team.name},"${memberNames}"\n`;
+});
 
-  const sanitizePath = (path) => {
-    return path.replace(/[.#$[\]]/g, "_");
-  };
+    csvContent += "\n";
 
-  const importFromCSV = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      Papa.parse(file, {
-        complete: async (result) => {
-          const { data } = result;
-          try {
-            let currentSection = "";
-            for (const row of data) {
-              if (
-                row[0] === "Students" ||
-                row[0] === "Teams" ||
-                row[0] === "Schedule"
-              ) {
-                currentSection = row[0];
-                continue; // Skip the header row
-              }
-              if (row[0] === "Name" || row[0] === "Day") continue; // Skip column headers
+    // ----- SCHEDULE SECTION -----
+    csvContent += "Schedule\n";
+    csvContent += "Day,Name,Start Time,End Time,Weeks,Video URL\n";
+    scheduleData.forEach((event) => {
+      const day = event.day || "";
+      const name = event.name || "";
+      const startTime = event.startTime || "";
+      const endTime = event.endTime || "";
+      const weeks = event.weeks || "";
+      const videoURL = event.videoURL || ""; 
+      csvContent += `${day},${name},${startTime},${endTime},${weeks},${videoURL}\n`;
+    });
 
-              switch (currentSection) {
-                case "Students":
-                  if (row[0] && row[1]) {
-                    // Check if name and student ID exist
-                    const sanitizedStudentId = sanitizePath(row[1]);
-                    await set(ref(db, `students/${sanitizedStudentId}`), {
-                      name: row[0],
-                      studentId: row[1], // Keep the original ID in the data
-                      projectPoints: Number(row[2]) || 0,
-                      communityPoints: Number(row[3]) || 0,
-                      graduationYear: Number(row[4]) || 0,
-                      projectGroups: row[5]
-                        ? row[5]
-                            .split(", ")
-                            .filter((group) => group !== '""' && group !== "")
-                        : [],
-                    });
-                    console.log(`Imported student: ${row[0]}`);
-                  }
-                  break;
-                case "Teams":
-                  if (row[0]) {
-                    // Check if team name exists
-                    const sanitizedTeamName = sanitizePath(row[0]);
-                    await set(ref(db, `teams/${sanitizedTeamName}`), {
-                      name: row[0],
-                      members: row[1]
-                        ? row[1].split(", ").filter((member) => member !== "")
-                        : [],
-                    });
-                    console.log(`Imported team: ${row[0]}`);
-                  }
-                  break;
-                case "Schedule":
-                  if (row[0] && row[1]) {
-                    // Check if day and name exist
-                    await push(ref(db, "schedule"), {
-                      day: row[0],
-                      name: row[1],
-                      startTime: row[2] || "",
-                      endTime: row[3] || "",
-                      weeks: row[4] || "",
-                    });
-                    console.log(`Imported schedule event: ${row[1]}`);
-                  }
-                  break;
-              }
-            }
-            alert("Data imported successfully.");
-          } catch (error) {
-            console.error("Error importing data: ", error);
-            alert(`An error occurred while importing data: ${error.message}`);
-          }
-        },
-        error: (error) => {
-          console.error("Error parsing CSV: ", error);
-          alert(`Error parsing CSV: ${error.message}`);
-        },
-      });
-    }
-  };
+    // ----- CREATE AND DOWNLOAD THE CSV FILE -----
+    // Convert the csvContent to a Blob
+    const csvBlob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create a temporary URL for the blob
+    const url = URL.createObjectURL(csvBlob);
+
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "mmc_data_export.csv");
+    document.body.appendChild(link);
+
+    // Simulate a click to trigger download
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error exporting data: ", error);
+    alert("An error occurred while exporting data. Please try again.");
+  }
+};
 
   if (loading) {
     return <div>Loading...</div>;
